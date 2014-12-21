@@ -197,6 +197,24 @@
                      </ul>
                   </li>
                   <li class="sub-menu">
+                     <a  href="teaching.php">
+                     <i class="fa fa-pencil"></i>
+                     <span>Model Drawing - Tutorial</span>
+                     </a>
+                  </li>
+                  <li class="sub-menu">
+                     <a  href="practice.php">
+                     <i class="fa fa-pencil"></i>
+                     <span>Model Drawing - Practice</span>
+                     </a>
+                  </li>
+                  <li class="sub-menu">
+                     <a  href="quiz.php">
+                     <i class="fa fa-pencil"></i>
+                     <span>Model Drawing - Quiz</span>
+                     </a>
+                  </li>
+                  <!-- <li class="sub-menu">
                      <a href="javascript:;" >
                      <i class="fa fa-pencil"></i>
                      <span>Model Drawing</span>
@@ -206,7 +224,7 @@
                         <li><a  href="practice.php">Practice Questions</a></li>
                         <li><a  href="quiz.php">Quiz Questions</a></li>
                      </ul>
-                  </li>
+                  </li> -->
                </ul>
                <!-- sidebar menu end-->
             </div>
@@ -218,6 +236,43 @@
             <section class="wrapper">
                <div class="row">
                   <div class="col-lg-9 main-chart">
+                     <div class="row mtbox">
+                        <div class="col-md-2 col-sm-2 col-md-offset-1 box0">
+                           <div class="box1">
+                              <img src="smallicons/flag.png" style="width:80px;height:80px">
+                              <h3>Settings</h3>
+                           </div>
+                           <p>We will implement it soon!</p>
+                        </div>
+                        <div class="col-md-2 col-sm-2 box0">
+                           <div class="box1">
+                              <img src="smallicons/briefcase.png" style="width:80px;height:80px">
+                              <h3>Files</h3>
+                           </div>
+                           <p>We will implement it soon!</p>
+                        </div>
+                        <div class="col-md-2 col-sm-2 box0">
+                           <div class="box1">
+                              <img src="smallicons/open-letter.png" style="width:80px;height:80px">
+                              <h3>Mail</h3>
+                           </div>
+                           <p>We will implement it soon!</p>
+                        </div>
+                        <div class="col-md-2 col-sm-2 box0">
+                           <div class="box1">
+                              <img src="smallicons/bookshelf.png" style="width:80px;height:80px">
+                              <h3>Notes</h3>
+                           </div>
+                           <p>We will implement it soon!</p>
+                        </div>
+                        <div class="col-md-2 col-sm-2 box0">
+                           <div class="box1">
+                              <img src="smallicons/rocket.png" style="width:80px;height:80px">
+                              <h3>Talk!</h3>
+                           </div>
+                           <p>We will implement it soon!</p>
+                        </div>
+                     </div>
                      <!-- /row mt -->  
                      <div class="row mt">
                         <!-- LEARNING PEDAGOGY PANELS -->
@@ -263,44 +318,7 @@
                         </div>
                         <!-- /col-md-4 -->
                      </div>
-                     <!-- /row -->
-                     <div class="row mtbox">
-                        <div class="col-md-2 col-sm-2 col-md-offset-1 box0">
-                           <div class="box1">
-                              <img src="smallicons/flag.png" style="width:80px;height:80px">
-                              <h3>Settings</h3>
-                           </div>
-                           <p>We will implement it soon!</p>
-                        </div>
-                        <div class="col-md-2 col-sm-2 box0">
-                           <div class="box1">
-                              <img src="smallicons/briefcase.png" style="width:80px;height:80px">
-                              <h3>Files</h3>
-                           </div>
-                           <p>We will implement it soon!</p>
-                        </div>
-                        <div class="col-md-2 col-sm-2 box0">
-                           <div class="box1">
-                              <img src="smallicons/open-letter.png" style="width:80px;height:80px">
-                              <h3>Mail</h3>
-                           </div>
-                           <p>We will implement it soon!</p>
-                        </div>
-                        <div class="col-md-2 col-sm-2 box0">
-                           <div class="box1">
-                              <img src="smallicons/bookshelf.png" style="width:80px;height:80px">
-                              <h3>Notes</h3>
-                           </div>
-                           <p>We will implement it soon!</p>
-                        </div>
-                        <div class="col-md-2 col-sm-2 box0">
-                           <div class="box1">
-                              <img src="smallicons/rocket.png" style="width:80px;height:80px">
-                              <h3>Talk!</h3>
-                           </div>
-                           <p>We will implement it soon!</p>
-                        </div>
-                     </div>
+                     <!-- /row --> 
                      <div class="row mt">
                         <!--CUSTOM CHART START -->
                         <div class="border-head">

@@ -556,7 +556,7 @@
         });
     </script>
 
-    <script type="application/javascript">
+    <script type="text/javascript">
         $(document).ready(function() {
             $("#date-popover").popover({
                 html: true,

@@ -29,7 +29,7 @@ $_SESSION['id']=$id;
 $_SESSION['type']=$type;
 $_SESSION['name']=$name;
 
-echo "<p>type: ".$type;
+//echo "<p>type: ".$type;
 if($type == 'student' )
 {
   header('Location: dashboard.php');

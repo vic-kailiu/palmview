@@ -35,24 +35,24 @@
                <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
             </div>
             <!--logo start-->
-            <a href="dashboard.html" class="logo"><b>SEEP</b></a>
+            <a href="dashboard.php" class="logo"><b>SEEP</b></a>
             <!--logo end-->
             <div class="nav notify-row" id="top_menu">
                <!--  notification start -->
                <ul class="nav top-menu">
                   <!-- settings start -->
                   <li class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.html#">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
                      <i class="fa fa-tasks"></i>
-                     <span class="badge bg-theme">4</span>
-                     </a>
+<!--                      <span class="badge bg-theme">4</span>-->
+                      </a>
                      <ul class="dropdown-menu extended tasks-bar">
                         <div class="notify-arrow notify-arrow-green"></div>
                         <li>
                            <p class="green">You have no pending tasks</p>
                         </li>
                         <!-- <li>
-                           <a href="teaching.html#">
+                           <a href="teaching.php#">
                               <div class="task-info">
                                  <div class="desc">Video Guide</div>
                                  <div class="percent">85%</div>
@@ -65,7 +65,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="practice.html#">
+                           <a href="practice.php#">
                               <div class="task-info">
                                  <div class="desc">Practice Questions</div>
                                  <div class="percent">60%</div>
@@ -78,7 +78,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="quiz.html#">
+                           <a href="quiz.php#">
                               <div class="task-info">
                                  <div class="desc">Quiz Questions</div>
                                  <div class="percent">20%</div>
@@ -91,7 +91,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="dashboard.html#">
+                           <a href="dashboard.php#">
                               <div class="task-info">
                                  <div class="desc">Review Model Drawing</div>
                                  <div class="percent">70%</div>
@@ -104,16 +104,16 @@
                            </a>
                         </li>
                         <li class="external">
-                           <a href="todo_list.html#">See All Tasks</a>
+                           <a href="todo_list.php#">See All Tasks</a>
                         </li> -->
                      </ul>
                   </li>
                   <!-- settings end -->
                   <!-- inbox dropdown start-->
                   <li id="header_inbox_bar" class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.html#">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
                      <i class="fa fa-envelope-o"></i>
-                     <span class="badge bg-theme">3</span>
+                     <!-- <span class="badge bg-theme">3</span> -->
                      </a>
                      <ul class="dropdown-menu extended inbox">
                         <div class="notify-arrow notify-arrow-green"></div>
@@ -121,7 +121,7 @@
                            <p class="green">You have no new messages</p>
                         </li>
                         <!-- <li>
-                           <a href="dashboard.html#">
+                           <a href="dashboard.php#">
                            <span class="photo"><img alt="avatar" src="img/friends/fr-02.jpg"></span>
                            <span class="subject">
                            <span class="from">Andy Khong</span>
@@ -133,7 +133,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="dashboard.html#">
+                           <a href="dashboard.php#">
                            <span class="photo"><img alt="avatar" src="img/ny.jpg"></span>
                            <span class="subject">
                            <span class="from">Cheryl</span>
@@ -145,7 +145,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="dashboard.html#">
+                           <a href="dashboard.php#">
                            <span class="photo"><img alt="avatar" src="img/friends/fr-11.jpg"></span>
                            <span class="subject">
                            <span class="from">Palm View Admin</span>
@@ -157,7 +157,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="dashboard.html#">See all messages</a>
+                           <a href="dashboard.php#">See all messages</a>
                         </li> -->
                      </ul>
                   </li>
@@ -178,10 +178,10 @@
             <div id="sidebar"  class="nav-collapse ">
                <!-- sidebar menu start-->
                <ul class="sidebar-menu" id="nav-accordion">
-                  <p class="centered"><a href="profile.html"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
-                  <h5 class="centered">Alex Tan</h5>
+                  <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
+                  <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
                   <li class="mt">
-                     <a class="active" href="dashboard.html">
+                     <a class="active" href="dashboard.php">
                      <i class="fa fa-dashboard"></i>
                      <span>Dashboard</span>
                      </a>
@@ -192,8 +192,8 @@
                      <span>My Student Guide</span>
                      </a>
                      <ul class="sub">
-                        <li><a  href="calendar.html">Calendar</a></li>
-                        <li><a  href="todo_list.html">Todo List</a></li>
+                        <li><a  href="calendar.php">Calendar</a></li>
+                        <li><a  href="todo_list.php">Todo List</a></li>
                      </ul>
                   </li>
                   <li class="sub-menu">
@@ -202,9 +202,9 @@
                      <span>Model Drawing</span>
                      </a>
                      <ul class="sub">
-                        <li><a  href="teaching.html">Video Guide</a></li>
-                        <li><a  href="practice.html">Practice Questions</a></li>
-                        <li><a  href="quiz.html">Quiz Questions</a></li>
+                        <li><a  href="teaching.php">Video Guide</a></li>
+                        <li><a  href="practice.php">Practice Questions</a></li>
+                        <li><a  href="quiz.php">Quiz Questions</a></li>
                      </ul>
                   </li>
                </ul>
@@ -279,7 +279,7 @@
                               </div>
                               <div class="blog1-text">
                                  <p>Our game of the month is Jellydad Hero. Enhance your critical thinking skills by playing it 
-                                    <a href="http://www.mathplayground.com/logic_jellydad_hero.html">here</a>.
+                                    <a href="http://www.mathplayground.com/logic_jellydad_hero.php">here</a>.
                                  </p>
                               </div>
                            </div>
@@ -293,7 +293,7 @@
                               </div>
                               <div class="blog2-text">
                                  <p>Learn how to tackle various model drawing questions 
-                                    <a href="teaching.html">here</a>.
+                                    <a href="teaching.php">here</a>.
                                  </p>
                               </div>
                            </div>
@@ -409,7 +409,7 @@
          <footer class="site-footer">
             <div class="text-center">
                2014 - Palm View Primary School
-               <a href="dashboard.html#" class="go-top">
+               <a href="dashboard.php#" class="go-top">
                <i class="fa fa-angle-up"></i>
                </a>
             </div>

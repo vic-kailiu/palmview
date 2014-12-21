@@ -1,3 +1,13 @@
+<?php
+session_start();// Starting Session
+// Storing Session
+$user_check=$_SESSION['name'];
+
+if (isset($user_check)) {
+	header('Location:dashboard.php');	 // Redirecting To Home Page
+}
+//session_destroy();
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -29,7 +39,6 @@
   <body>
 
       <!-- MAIN CONTENT -->
-
 	  <div id="login-page">
 	  	<div class="container">
 	  	

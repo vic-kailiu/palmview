@@ -7,25 +7,21 @@ include('session.php');
 <head>
 
 <script>
-    function getHiddenProp(){
-      var prefixes = ['webkit','moz','ms','o'];
-
+  function getHiddenProp() {
+    var prefixes = ['webkit','moz','ms','o'];
     // if 'hidden' is natively supported just return it
-    if ('hidden' in document) return 'hidden';
-    
+    if ('hidden' in document) return 'hidden';    
     // otherwise loop over all the known prefixes until we find one
     for (var i = 0; i < prefixes.length; i++){
       if ((prefixes[i] + 'Hidden') in document) 
         return prefixes[i] + 'Hidden';
     }
-    // otherwise it's not supported
-    return null;
+    return null; // otherwise it's not supported
   }
 
   function isHidden() {
     var prop = getHiddenProp();
     if (!prop) return false;
-    
     return document[prop];
   }
 
@@ -37,89 +33,75 @@ include('session.php');
 
   function visChange() {
     var timestamp;
-
-// Date() prototype does not provide native number padding - let's add a method:
-Date.prototype.pad = function(integer) {
-  var result;
-    // Can't decide between ternary and slicing
-    // result = ("0" + integer).slice(-2); 
-    result = integer < 10
-    ? "0" + integer
-    : integer;
-    return result;
-  };
-
-// Create a new Date() instance and add day, time and now properties
-timestamp = new Date();
-
-// Reorder the array entries to your own needs
-timestamp.day = [
-timestamp.pad(timestamp.getDate()),
-    timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
-    timestamp.getFullYear()
+    // Date() prototype does not provide native number padding - let's add a method:
+    Date.prototype.pad = function(integer) {
+      var result;
+      // Can't decide between ternary and slicing
+      // result = ("0" + integer).slice(-2); 
+      result = integer < 10 ? "0" + integer : integer;
+      return result;
+    };
+    // Create a new Date() instance and add day, time and now properties
+    timestamp = new Date();
+    // Reorder the array entries to your own needs
+    timestamp.day = [
+      timestamp.pad(timestamp.getDate()),
+      timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
+      timestamp.getFullYear()
     ];
-
     timestamp.time = [
-    timestamp.pad(timestamp.getHours()),
-    timestamp.pad(timestamp.getMinutes()),
-    timestamp.pad(timestamp.getSeconds())
+      timestamp.pad(timestamp.getHours()),
+      timestamp.pad(timestamp.getMinutes()),
+      timestamp.pad(timestamp.getSeconds())
     ];
-
     timestamp.now = timestamp.time.join("");
 
     var txtFld = document.getElementById('visChangeText');
-
     if (txtFld) {
-      if (isHidden()){
-       txtFld.value += "TimeOut: "+ timestamp.now+"\n";		 
-       console.log("timeOff: "+timestamp.now);
-     }
-     else{
-      txtFld.value += "TimeIn: "+timestamp.now+"\n";
-      console.log("timeIn: "+timestamp.now);
+      if (isHidden()) {
+        txtFld.value += "TimeOut: "+ timestamp.now+"\n";		 
+        console.log("timeOff: "+timestamp.now);
+      }
+      else {
+        txtFld.value += "TimeIn: "+timestamp.now+"\n";
+        console.log("timeIn: "+timestamp.now);
+      }
     }
   }
-}
 
-function myFun()
-{
-  var timestamp;
+  function myFun()
+  {
+    var timestamp;
+    // Date() prototype does not provide native number padding - let's add a method:
+    Date.prototype.pad = function(integer) {
+      var result;
+      // Can't decide between ternary and slicing
+      // result = ("0" + integer).slice(-2); 
+      result = integer < 10
+      ? "0" + integer
+      : integer;
+      return result;
+    };
 
-// Date() prototype does not provide native number padding - let's add a method:
-Date.prototype.pad = function(integer) {
-  var result;
-    // Can't decide between ternary and slicing
-    // result = ("0" + integer).slice(-2); 
-    result = integer < 10
-    ? "0" + integer
-    : integer;
-
-    return result;
-  };
-
-// Create a new Date() instance and add day, time and now properties
-timestamp = new Date();
-
-// Reorder the array entries to your own needs
-timestamp.day = [
-timestamp.pad(timestamp.getDate()),
-    timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
-    timestamp.getFullYear()
+    // Create a new Date() instance and add day, time and now properties
+    timestamp = new Date();
+    // Reorder the array entries to your own needs
+    timestamp.day = [
+      timestamp.pad(timestamp.getDate()),
+      timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
+      timestamp.getFullYear()
     ];
-
     timestamp.time = [
-    timestamp.pad(timestamp.getHours()),
-    timestamp.pad(timestamp.getMinutes()),
-    timestamp.pad(timestamp.getSeconds())
+      timestamp.pad(timestamp.getHours()),
+      timestamp.pad(timestamp.getMinutes()),
+      timestamp.pad(timestamp.getSeconds())
     ];
-
     timestamp.now = timestamp.time.join("");
-//timestamp.now = timestamp.day.join("") + timestamp.time.join(""); //can have date too
+    //timestamp.now = timestamp.day.join("") + timestamp.time.join(""); //can have date too
 
-console.log("Time Start: "+timestamp.now);
-}
+    console.log("Time Start: "+timestamp.now);
+  }
 </script>
-
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -163,14 +145,14 @@ console.log("Time Start: "+timestamp.now);
           <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
         </div>
         <!--logo start-->
-        <a href="DIPdashboard.php" class="logo"><b>SEEP</b></a>
+        <a href="dashboard.php" class="logo"><b>SEEP</b></a>
         <!--logo end-->
         <div class="nav notify-row" id="top_menu">
           <!--  notification start -->
           <ul class="nav top-menu">
             <!-- settings start -->
             <li class="dropdown">
-              <a data-toggle="dropdown" class="dropdown-toggle" href="DIPdashboard.php#">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
                 <i class="fa fa-tasks"></i>
                 <span class="badge bg-theme">4</span>
               </a>
@@ -180,7 +162,7 @@ console.log("Time Start: "+timestamp.now);
                   <p class="green">You have 4 pending tasks</p>
                 </li>
                 <li>
-                  <a href="DIPteaching.php#">
+                  <a href="teaching.php#">
                     <div class="task-info">
                       <div class="desc">Video Guide</div>
                       <div class="percent">85%</div>
@@ -193,7 +175,7 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li>
-                  <a href="DIPpractice.php#">
+                  <a href="practice.php#">
                     <div class="task-info">
                       <div class="desc">Practice Questions</div>
                       <div class="percent">60%</div>
@@ -206,7 +188,7 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li>
-                  <a href="DIPquiz.php#">
+                  <a href="quiz.php#">
                     <div class="task-info">
                       <div class="desc">Quiz Questions</div>
                       <div class="percent">20%</div>
@@ -219,7 +201,7 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li>
-                  <a href="DIPdashboard.php#">
+                  <a href="dashboard.php#">
                     <div class="task-info">
                       <div class="desc">Review Model Drawing</div>
                       <div class="percent">70%</div>
@@ -232,14 +214,14 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li class="external">
-                  <a href="DIPtodo_list.php#">See All Tasks</a>
+                  <a href="todo_list.php#">See All Tasks</a>
                 </li>
               </ul>
             </li>
             <!-- settings end -->
             <!-- inbox dropdown start-->
             <li id="header_inbox_bar" class="dropdown">
-              <a data-toggle="dropdown" class="dropdown-toggle" href="DIPdashboard.php#">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
                 <i class="fa fa-envelope-o"></i>
                 <span class="badge bg-theme">3</span>
               </a>
@@ -249,7 +231,7 @@ console.log("Time Start: "+timestamp.now);
                   <p class="green">You have 3 new messages</p>
                 </li>
                 <li>
-                  <a href="DIPdashboard.php#">
+                  <a href="dashboard.php#">
                     <span class="photo"><img alt="avatar" src="img/friends/fr-02.jpg"></span>
                     <span class="subject">
                       <span class="from">Andy Khong</span>
@@ -261,7 +243,7 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li>
-                  <a href="DIPdashboard.php#">
+                  <a href="dashboard.php#">
                     <span class="photo"><img alt="avatar" src="img/ny.jpg"></span>
                     <span class="subject">
                       <span class="from">Cheryl</span>
@@ -273,7 +255,7 @@ console.log("Time Start: "+timestamp.now);
                   </a>
                 </li>
                 <li>
-                  <a href="DIPdashboard.php#">
+                  <a href="dashboard.php#">
                     <span class="photo"><img alt="avatar" src="img/friends/fr-11.jpg"></span>
                     <span class="subject">
                       <span class="from">Palm View Admin</span>
@@ -285,7 +267,7 @@ console.log("Time Start: "+timestamp.now);
                  </a>
                </li>
                <li>
-                <a href="DIPdashboard.php#">See all messages</a>
+                <a href="dashboard.php#">See all messages</a>
               </li>
             </ul>
           </li>
@@ -310,11 +292,11 @@ console.log("Time Start: "+timestamp.now);
           <!-- sidebar menu start-->
           <ul class="sidebar-menu" id="nav-accordion">
 
-           <p class="centered"><a href="DIPprofile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
+           <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
            <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
 
            <li class="mt">
-            <a class="active" href="DIPdashboard.php">
+            <a class="active" href="dashboard.php">
               <i class="fa fa-dashboard"></i>
               <span>Dashboard</span>
             </a>
@@ -328,8 +310,8 @@ console.log("Time Start: "+timestamp.now);
               <span>My Student Guide</span>
             </a>
             <ul class="sub">
-              <li><a  href="DIPcalendar.php">Calendar</a></li>
-              <li><a  href="DIPtodo_list.php">Todo List</a></li>
+              <li><a  href="calendar.php">Calendar</a></li>
+              <li><a  href="todo_list.php">Todo List</a></li>
             </ul>
           </li>
           <li class="sub-menu">
@@ -338,9 +320,9 @@ console.log("Time Start: "+timestamp.now);
               <span>Model Drawing</span>
             </a>
             <ul class="sub">
-              <li><a  href="DIPteaching.php">Video Guide</a></li>
-              <li><a  href="DIPpractice.php">Practice Questions</a></li>
-              <li><a  href="DIPquiz.php">Quiz Questions</a></li>
+              <li><a  href="teaching.php">Video Guide</a></li>
+              <li><a  href="practice.php">Practice Questions</a></li>
+              <li><a  href="quiz.php">Quiz Questions</a></li>
             </ul>
           </li>
 
@@ -441,7 +423,7 @@ console.log("Time Start: "+timestamp.now);
      </div>
      <div class="blog2-text">
        <p>Learn how to tackle various model drawing questions 
-        <a href="DIPteaching.php">here</a>.</p>
+        <a href="teaching.php">here</a>.</p>
       </div>
 
     </div>
@@ -558,7 +540,7 @@ console.log("Time Start: "+timestamp.now);
 <footer class="site-footer">
   <div class="text-center">
     2014 - Palm View Primary School
-    <a href="DIPdashboard.php#" class="go-top">
+    <a href="dashboard.php#" class="go-top">
       <i class="fa fa-angle-up"></i>
     </a>
   </div>

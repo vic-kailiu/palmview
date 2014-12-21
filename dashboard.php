@@ -35,24 +35,24 @@
                <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
             </div>
             <!--logo start-->
-            <a href="DIPdashboard.html" class="logo"><b>SEEP</b></a>
+            <a href="dashboard.html" class="logo"><b>SEEP</b></a>
             <!--logo end-->
             <div class="nav notify-row" id="top_menu">
                <!--  notification start -->
                <ul class="nav top-menu">
                   <!-- settings start -->
                   <li class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="DIPdashboard.html#">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.html#">
                      <i class="fa fa-tasks"></i>
                      <span class="badge bg-theme">4</span>
                      </a>
                      <ul class="dropdown-menu extended tasks-bar">
                         <div class="notify-arrow notify-arrow-green"></div>
                         <li>
-                           <p class="green">You have 4 pending tasks</p>
+                           <p class="green">You have no pending tasks</p>
                         </li>
-                        <li>
-                           <a href="DIPteaching.html#">
+                        <!-- <li>
+                           <a href="teaching.html#">
                               <div class="task-info">
                                  <div class="desc">Video Guide</div>
                                  <div class="percent">85%</div>
@@ -65,7 +65,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPpractice.html#">
+                           <a href="practice.html#">
                               <div class="task-info">
                                  <div class="desc">Practice Questions</div>
                                  <div class="percent">60%</div>
@@ -78,7 +78,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPquiz.html#">
+                           <a href="quiz.html#">
                               <div class="task-info">
                                  <div class="desc">Quiz Questions</div>
                                  <div class="percent">20%</div>
@@ -91,7 +91,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPdashboard.html#">
+                           <a href="dashboard.html#">
                               <div class="task-info">
                                  <div class="desc">Review Model Drawing</div>
                                  <div class="percent">70%</div>
@@ -104,24 +104,24 @@
                            </a>
                         </li>
                         <li class="external">
-                           <a href="DIPtodo_list.html#">See All Tasks</a>
-                        </li>
+                           <a href="todo_list.html#">See All Tasks</a>
+                        </li> -->
                      </ul>
                   </li>
                   <!-- settings end -->
                   <!-- inbox dropdown start-->
                   <li id="header_inbox_bar" class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="DIPdashboard.html#">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.html#">
                      <i class="fa fa-envelope-o"></i>
                      <span class="badge bg-theme">3</span>
                      </a>
                      <ul class="dropdown-menu extended inbox">
                         <div class="notify-arrow notify-arrow-green"></div>
                         <li>
-                           <p class="green">You have 3 new messages</p>
+                           <p class="green">You have no new messages</p>
                         </li>
-                        <li>
-                           <a href="DIPdashboard.html#">
+                        <!-- <li>
+                           <a href="dashboard.html#">
                            <span class="photo"><img alt="avatar" src="img/friends/fr-02.jpg"></span>
                            <span class="subject">
                            <span class="from">Andy Khong</span>
@@ -133,7 +133,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPdashboard.html#">
+                           <a href="dashboard.html#">
                            <span class="photo"><img alt="avatar" src="img/ny.jpg"></span>
                            <span class="subject">
                            <span class="from">Cheryl</span>
@@ -145,7 +145,7 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPdashboard.html#">
+                           <a href="dashboard.html#">
                            <span class="photo"><img alt="avatar" src="img/friends/fr-11.jpg"></span>
                            <span class="subject">
                            <span class="from">Palm View Admin</span>
@@ -157,8 +157,8 @@
                            </a>
                         </li>
                         <li>
-                           <a href="DIPdashboard.html#">See all messages</a>
-                        </li>
+                           <a href="dashboard.html#">See all messages</a>
+                        </li> -->
                      </ul>
                   </li>
                   <!-- inbox dropdown end -->
@@ -178,10 +178,10 @@
             <div id="sidebar"  class="nav-collapse ">
                <!-- sidebar menu start-->
                <ul class="sidebar-menu" id="nav-accordion">
-                  <p class="centered"><a href="DIPprofile.html"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
+                  <p class="centered"><a href="profile.html"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
                   <h5 class="centered">Alex Tan</h5>
                   <li class="mt">
-                     <a class="active" href="DIPdashboard.html">
+                     <a class="active" href="dashboard.html">
                      <i class="fa fa-dashboard"></i>
                      <span>Dashboard</span>
                      </a>
@@ -192,8 +192,8 @@
                      <span>My Student Guide</span>
                      </a>
                      <ul class="sub">
-                        <li><a  href="DIPcalendar.html">Calendar</a></li>
-                        <li><a  href="DIPtodo_list.html">Todo List</a></li>
+                        <li><a  href="calendar.html">Calendar</a></li>
+                        <li><a  href="todo_list.html">Todo List</a></li>
                      </ul>
                   </li>
                   <li class="sub-menu">
@@ -202,9 +202,9 @@
                      <span>Model Drawing</span>
                      </a>
                      <ul class="sub">
-                        <li><a  href="DIPteaching.html">Video Guide</a></li>
-                        <li><a  href="DIPpractice.html">Practice Questions</a></li>
-                        <li><a  href="DIPquiz.html">Quiz Questions</a></li>
+                        <li><a  href="teaching.html">Video Guide</a></li>
+                        <li><a  href="practice.html">Practice Questions</a></li>
+                        <li><a  href="quiz.html">Quiz Questions</a></li>
                      </ul>
                   </li>
                </ul>
@@ -224,35 +224,35 @@
                               <img src="smallicons/flag.png" style="width:80px;height:80px">
                               <h3>Settings</h3>
                            </div>
-                           <p>Edit your settings here</p>
+                           <p>We will implement it soon!</p>
                         </div>
                         <div class="col-md-2 col-sm-2 box0">
                            <div class="box1">
                               <img src="smallicons/briefcase.png" style="width:80px;height:80px">
                               <h3>Files</h3>
                            </div>
-                           <p>4 New files are uploaded</p>
+                           <p>We will implement it soon!</p>
                         </div>
                         <div class="col-md-2 col-sm-2 box0">
                            <div class="box1">
                               <img src="smallicons/open-letter.png" style="width:80px;height:80px">
                               <h3>Mail</h3>
                            </div>
-                           <p>You have 23 unread messages in your inbox.</p>
+                           <p>We will implement it soon!</p>
                         </div>
                         <div class="col-md-2 col-sm-2 box0">
                            <div class="box1">
                               <img src="smallicons/bookshelf.png" style="width:80px;height:80px">
                               <h3>Notes</h3>
                            </div>
-                           <p>You have 2 new notes.</p>
+                           <p>We will implement it soon!</p>
                         </div>
                         <div class="col-md-2 col-sm-2 box0">
                            <div class="box1">
                               <img src="smallicons/rocket.png" style="width:80px;height:80px">
                               <h3>Talk!</h3>
                            </div>
-                           <p>Discuss your views with fellow friends!</p>
+                           <p>We will implement it soon!</p>
                         </div>
                      </div>
                      <!-- /row mt -->  
@@ -293,7 +293,7 @@
                               </div>
                               <div class="blog2-text">
                                  <p>Learn how to tackle various model drawing questions 
-                                    <a href="DIPteaching.html">here</a>.
+                                    <a href="teaching.html">here</a>.
                                  </p>
                               </div>
                            </div>
@@ -353,7 +353,13 @@
                   <div class="col-lg-3 ds">
                      <!--COMPLETED ACTIONS DONUTS CHART-->
                      <h3>NOTIFICATIONS</h3>
-                     <!-- First Action -->
+                     <div class="desc">
+                        <div class="thumb">
+                           <span class="badge bg-theme"><i class="fa fa-clock-o"></i></span>
+                        </div>
+                        <div class="details"><p><muted>No More Notifications</muted></p></div>
+                     </div>
+                     <!-- Action 
                      <div class="desc">
                         <div class="thumb">
                            <span class="badge bg-theme"><i class="fa fa-clock-o"></i></span>
@@ -366,7 +372,6 @@
                            </p>
                         </div>
                      </div>
-                     <!-- Second Action -->
                      <div class="desc">
                         <div class="thumb">
                            <span class="badge bg-theme"><i class="fa fa-clock-o"></i></span>
@@ -378,7 +383,7 @@
                               <a href="#">Cheryl Seow</a> sent you a message.<br/>
                            </p>
                         </div>
-                     </div>
+                     </div> -->
                      <!-- CALENDAR-->
                      <div id="calendar" class="mb">
                         <div class="panel green-panel no-margin">
@@ -404,7 +409,7 @@
          <footer class="site-footer">
             <div class="text-center">
                2014 - Palm View Primary School
-               <a href="DIPdashboard.html#" class="go-top">
+               <a href="dashboard.html#" class="go-top">
                <i class="fa fa-angle-up"></i>
                </a>
             </div>
@@ -426,25 +431,26 @@
       <!--script for this page-->
       <script src="js/sparkline-chart.js"></script>    
       <script src="js/zabuto_calendar.js"></script>    
-      <script type="text/javascript">
-         $(document).ready(function () {
-         var unique_id = $.gritter.add({
-             // (string | mandatory) the heading of the notification
-             title: 'Moblie Learning Update',
-             // (string | mandatory) the text inside the notification
-             text: 'SEEP app is now available on iOS and Google Play. Click <b>here</b> to download app.',
-             // (string | optional) the image to display on the left
-             image: 'img/friends/fr-09.jpg',
-             // (bool | optional) if you want it to fade out on its own or just sit there
-             sticky: true,
-             // (int | optional) the time you want it to be alive for before fading out
-             time: '',
-             // (string | optional) the class name you want to apply to that specific message
-             class_name: 'my-sticky-class'
-         });
-         return false;
-         });
-      </script>
+      
+      // <script type="text/javascript">
+      //    $(document).ready(function () {
+      //    var unique_id = $.gritter.add({
+      //        // (string | mandatory) the heading of the notification
+      //        title: 'Moblie Learning Update',
+      //        // (string | mandatory) the text inside the notification
+      //        text: 'SEEP app is now available on iOS and Google Play. Click <b>here</b> to download app.',
+      //        // (string | optional) the image to display on the left
+      //        image: 'img/friends/fr-09.jpg',
+      //        // (bool | optional) if you want it to fade out on its own or just sit there
+      //        sticky: true,
+      //        // (int | optional) the time you want it to be alive for before fading out
+      //        time: '',
+      //        // (string | optional) the class name you want to apply to that specific message
+      //        class_name: 'my-sticky-class'
+      //    });
+      //    return false;
+      //    });
+      // </script>
       <script type="application/javascript">
          $(document).ready(function () {
              $("#date-popover").popover({html: true, trigger: "manual"});

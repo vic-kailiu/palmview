@@ -1,8 +1,13 @@
 <?php
-include('conn.php');
 session_start();// Starting Session
 // Storing Session
 $user_check=$_SESSION['name'];
+
+if (!isset($user_check)) {
+	header('Location:index_login.php');	 // Redirecting To Home Page
+}
+
+include('conn.php');
 // SQL Query To Fetch Complete Information Of User
 try{
     $pstmt = $dbConn->prepare('(SELECT StudentName as Name from STUDENT WHERE StudentName = ?)');

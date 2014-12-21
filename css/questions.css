@@ -1,0 +1,124 @@
+#text button {
+	background: transparent;
+	border: 0;
+	padding: 0 0 0 6px;
+}
+
+#text button:focus {
+	outline: 0;
+}
+
+#text p {
+	margin: 0;
+}
+
+.horizontal {
+	height: 50px;
+	width: 100%
+}
+.numberPlacing {
+	height: 25px;
+	width: 100%
+}
+
+.box, .box_model {
+	height: 100%;
+	margin-right:-3px;
+	display: inline-block;
+}
+
+.box {
+	border: 3px solid grey;
+}
+
+.box_model {
+	border: 3px solid transparent;
+}
+.box_dotted{
+   border-style:dashed;
+   height: 100%;
+	margin-right:-3px;
+	display: inline-block;
+         border-right-style: none;
+    border-left-style: none;
+}
+
+.model0 {
+	color:white;
+	height: 100%;
+	width: 100%;
+	background-color: #F64747;
+        display: table;
+	overflow:hidden;
+	position: relative;
+}
+.model1 {
+	color:white;
+	height: 100%;
+	width: 101%;
+	background-color: #2574A9;
+        display: table;
+	overflow:hidden;
+	position: relative;
+}
+
+.boxno15 {
+	height: 50px;
+	width: 100%;
+}
+
+.strech {
+	height: 100%;
+	margin-right: -3px;
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+}
+
+.left_arrow, .line, .right_arrow {
+	position: absolute;
+	height: 100%;
+}
+
+.line {
+	width: 100%;
+}
+
+.right_arrow {
+	right: 0;
+}
+
+.left_arrow, .right_arrow {
+	z-index: 10;
+}
+
+.boxtotalpies, .boxtotalpiesmodel {
+	height: 80px;
+	width: 30%;
+	display: table;
+	overflow:hidden;
+	position: relative;
+}
+
+.boxtotalpies {
+	border: 3px solid grey;
+}
+
+.boxtotalpiesmodel {
+	border: 3px solid transparent;
+}
+
+#totalpiesmodel {
+	background-color: #3A539B;
+	position: absolute; 
+	top: 50%;
+	display: table-cell; 
+	vertical-align: middle;
+}
+
+.center_text {
+        
+	text-align: center;
+	position: relative;
+	color:white;
+}

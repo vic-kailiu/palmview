@@ -1,7 +1,7 @@
 <?php
 session_start(); // Starting Session
 $error=''; // Variable To Store Error Message
-if (empty($_POST['username']) || empty($_POST['password']))
+if (empty($_POST['user']) || empty($_POST['pass']))
 {
   echo "<script type='text/javascript'>alert('SORRY... YOU ENTERD WRONG ID AND PASSWORD... PLEASE RETRY...');location.href='index_login.php'</script>";
 }

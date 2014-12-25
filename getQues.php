@@ -1,15 +1,15 @@
 <?php
-$q = intval($_GET['q']);
+$type = "MODAL_A1";
 include('conn.php');
 
 try{
 	$pstmt = $dbConn->prepare(
-	'(SELECT qns, ans from QUESTIONDB 
-	WHERE qID = ?)');
-	$pstmt->execute(array($q));
-	$pstmt->bindColumn(1,$qns);
-	$pstmt->bindColumn(2,$ans);
-	$pstmt->fetch(PDO::FETCH_ASSOC);
+	'SELECT qID, qns, ans from `QUESTIONDB` WHERE `qnsType` = ? ORDER BY  `QUESTIONDB`.`qID` ASC ');
+	$pstmt->execute(array($type));
+	$pstmt->bindColumn(1,$id);
+	$pstmt->bindColumn(2,$qns);
+	$pstmt->bindColumn(3,$ans);
+	$rc = $pstmt->rowCount();
 }
 catch (Exception $e) 
 {
@@ -19,7 +19,12 @@ catch (Exception $e)
 	die("[$fileName][$lineNumber] Database error: " . $e->getMessage() . '<br />');
 }
 
+$q = rand (1, $rc);
+for (int i = 1; i<=$q; i++)
+	$pstmt->fetch(PDO::FETCH_ASSOC);
+
 $outp = "[{";
+$outp .= ' "id":" '.$id.' ", ';
 $outp .= ' "qns":" '.$qns.' ", ';
 $outp .= ' "ans":" '.$ans.' ", ';
 $outp .="}]";

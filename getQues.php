@@ -1,14 +1,15 @@
 <?php
-$type = "MODAL_A1";
+$type = $_GET['type'];
 include('conn.php');
 
 try{
 	$pstmt = $dbConn->prepare(
-	'SELECT qID, qns, ans from `QUESTIONDB` WHERE `qnsType` = ? ORDER BY  `QUESTIONDB`.`qID` ASC ');
+	'SELECT qID, qnsType, qns, ans from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY  `QUESTIONDB`.`qID` ASC ');
 	$pstmt->execute(array($type));
 	$pstmt->bindColumn(1,$id);
-	$pstmt->bindColumn(2,$qns);
-	$pstmt->bindColumn(3,$ans);
+	$pstmt->bindColumn(2,$qtype);
+	$pstmt->bindColumn(3,$qns);
+	$pstmt->bindColumn(4,$ans);
 	$rc = $pstmt->rowCount();
 }
 catch (Exception $e) 
@@ -20,13 +21,16 @@ catch (Exception $e)
 }
 
 $q = rand (1, $rc);
-for (int i = 1; i<=$q; i++)
-	$pstmt->fetch(PDO::FETCH_ASSOC);
+
+for($i=0;$i<$q;$i++){
+    $pstmt->fetch(PDO::FETCH_ASSOC);
+}
 
 $outp = "[{";
-$outp .= ' "id":" '.$id.' ", ';
-$outp .= ' "qns":" '.$qns.' ", ';
-$outp .= ' "ans":" '.$ans.' ", ';
+$outp .= '"id":"'	.$id.	'", ';
+$outp .= '"type":"'.$qtype.	'", ';
+$outp .= '"qns":"'	.$qns.	'", ';
+$outp .= '"ans":"'	.$ans.	'"';
 $outp .="}]";
 
 echo($outp);

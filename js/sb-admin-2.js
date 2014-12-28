@@ -48,12 +48,372 @@ function generateQuestion() {
     }
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            var foo = xmlhttp.responseText;
-            var foooo = 1;
+            var arr = JSON.parse(xmlhttp.responseText);
+
+
+
+
+            var s = '<input type="text" id="check" name="check">'; //Create one textbox as HTML
+            document.getElementById("answer").innerHTML = "Enter your answer :";
+            document.getElementById("answer").innerHTML += s + "  ";
+            var btn = "<button type='button' class='btn btn-success' onclick='checkanswer(" + answerkey + ")'>Check Answer</button>";
+            document.getElementById("answer").innerHTML += btn;
         }
     }
-    xmlhttp.open("GET","getQues.php?type=MODAL-A1",true);
+    xmlhttp.open("GET","getQues.php?type=MODAL_A1",true);
     xmlhttp.send();
+}
+
+function generateA1() {
+    //line and boxes
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[2 + i] + "</div>";
+    }
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create arrow and line
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    }
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    content += "</div>"
+    var strech_arrow = "<div class='horizontal' id='boxno13'>";
+    strech_arrow += "<div class='strech' style='width:" + 100 + "%'>";
+    strech_arrow += "<img class='left_arrow' src='assets/images/leftA.png'>";
+    strech_arrow += "<img class='line' src='assets/images/line.png'>";
+    strech_arrow += "<img class='right_arrow' src='assets/images/rightA.png'>";
+    strech_arrow += "</div></div>";
+    questionDiv.innerHTML += content;
+    questionDiv.innerHTML += strech_arrow;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>?</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model" + i.toString() + "' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+        content += resultArray[5 + i] + "</div></div></div>";
+    }
+    content += "</div>"
+    dragDiv.innerHTML += content;
+}
+
+function generateA2() {
+    //line and boxes
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    var count = resultArray[2] / resultArray[4];
+    content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[2] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create arrow and line
+    content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    content += "<div class='box' id='box0' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    content += "</div>"
+    count = resultArray[3] / resultArray[4];
+    //2nd BOX
+    content += "<div class='horizontal' id='drop_container'>";
+    //Create box
+    content += "<div class='box' id='box1' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    content += "</div>"
+        //Create arrow and line
+    content += "<div class='horizontal' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>";
+    content += "</div>";
+    questionDiv.innerHTML += content;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[3] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model" + i.toString() + "' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+        content += resultArray[5 + i] + "</div></div></div>";
+    }
+    content += "</div>"
+    dragDiv.innerHTML += content;   
+}
+
+function generateS1() {
+   //line and boxes
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        if (resultArray[7] == "A" && i == 0 || resultArray[7] == "B" && i == 1) {
+            content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>?</div>";
+        } else {
+            content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[2 + i] + "</div>";
+        }
+    }
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create arrow and line
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    }
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    content += "</div>"
+    var strech_arrow = "<div class='horizontal' id='boxno13'>";
+    strech_arrow += "<div class='strech' style='width:" + 100 + "%'>";
+    strech_arrow += "<img class='left_arrow' src='assets/images/leftA.png'>";
+    strech_arrow += "<img class='line' src='assets/images/line.png'>";
+    strech_arrow += "<img class='right_arrow' src='assets/images/rightA.png'>";
+    strech_arrow += "</div></div>";
+    questionDiv.innerHTML += content;
+    questionDiv.innerHTML += strech_arrow;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>" + resultArray[4] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    for (i = 0; i < 2; i++) {
+        var count = resultArray[2 + i] / resultArray[4];
+        content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model" + i.toString() + "' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+        content += resultArray[5 + i] + "</div></div></div>";
+    }
+    content += "</div>"
+    dragDiv.innerHTML += content;
+}
+
+function generateS2() {
+    //line and boxes
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    var count = 1;
+    content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[2] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create arrow and line
+    content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    content += "<div class='box' id='box0' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    content += "</div>"
+    count = resultArray[3] / resultArray[2];
+    //2nd BOX
+    content += "<div class='horizontal' id='drop_container'>";
+    //Create box
+    content += "<div class='box' id='box1' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    content += "</div>"
+    //Create arrow and line
+    content += "<div class='horizontal' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    count = resultArray[4] / resultArray[2];
+    //Create arrow and line
+    content += "<div class='strech' style='width:" + (100 * count) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>";
+    content += "<div class='horizontal' id='drop_container'>";
+    if (resultArray[7] == "B") {
+        count = resultArray[3] / resultArray[2];
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>?</div>";
+        count = resultArray[4] / resultArray[2];
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[4] + "</div>";
+    } else {
+        count = resultArray[3] / resultArray[2];
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + resultArray[3] + "</div>";
+        count = resultArray[4] / resultArray[2];
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>?</div>";
+    }
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    var count = 1
+    content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model0' id='model0' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+    content += resultArray[5] + "</div></div></div>";
+    count = resultArray[3] / resultArray[2];
+    content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model1' id='model1' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+    content += resultArray[6] + "</div></div></div>";
+    content += "</div>"
+    dragDiv.innerHTML += content;
+}
+
+function generateM1() {
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%' align='center'>" + resultArray[2] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    for (i = 0; i < resultArray[4]; i++) {
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 / resultArray[4]) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    content += "</div>"
+    var strech_arrow = "<div class='horizontal' id='boxno13'>";
+    strech_arrow += "<div class='strech' style='width:" + 100 + "%'>";
+    strech_arrow += "<img class='left_arrow' src='assets/images/leftA.png'>";
+    strech_arrow += "<img class='line' src='assets/images/line.png'>";
+    strech_arrow += "<img class='right_arrow' src='assets/images/rightA.png'>";
+    strech_arrow += "</div></div>";
+    questionDiv.innerHTML += content;
+    questionDiv.innerHTML += strech_arrow;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>?</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    for (i = 0; i < resultArray[4]; i++) {
+        content += "<div class='box_model' style='width:" + (100 / resultArray[4]) + "%'><div class='model0' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+        content += (i + 1).toString() + "</div></div></div>";
+    }
+    content += "</div>"
+    dragDiv.innerHTML += content;
+}
+
+function generateD1() {
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%' align='center'>?</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    for (i = 0; i < resultArray[4]; i++) {
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 / resultArray[4]) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    content += "</div>"
+    var strech_arrow = "<div class='horizontal' id='boxno13'>";
+    strech_arrow += "<div class='strech' style='width:" + 100 + "%'>";
+    strech_arrow += "<img class='left_arrow' src='assets/images/leftA.png'>";
+    strech_arrow += "<img class='line' src='assets/images/line.png'>";
+    strech_arrow += "<img class='right_arrow' src='assets/images/rightA.png'>";
+    strech_arrow += "</div></div>";
+    questionDiv.innerHTML += content;
+    questionDiv.innerHTML += strech_arrow;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>" + resultArray[3] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+    //boxes
+    content = "<div class='horizontal' id='drag_container'>"
+    for (i = 0; i < resultArray[4]; i++) {
+        content += "<div class='box_model' style='width:" + (100 / resultArray[4]) + "%'><div class='model0' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
+        content += (i + 1).toString() + "</div></div></div>";
+    }
+    content += "</div>"
+    dragDiv.innerHTML += content;
+}
+
+function generateD2() {
+    var content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%' align='center'>" + resultArray[2] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    content += "<div class='strech' style='width:" + (100 / resultArray[4]) + "%'><img class='left_arrow' src='assets/images/leftA.png'><img class='line' src='assets/images/line.png'><img class='right_arrow' src='assets/images/rightA.png'></div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    content = "<div class='horizontal' id='drop_container'>";
+    //Create box
+    for (i = 0; i < 2; i++) {
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 / resultArray[4]) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    for (i = 2; i < (resultArray[4] - 1); i++) {
+        content += "<div class='box_dotted' id='box" + i.toString() + "' style='width:" + (100 / resultArray[4]) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    }
+    content += "<div class='box' id='box" + resultArray[4] + "' style='width:" + (100 / resultArray[4]) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+    content += "</div>"
+    var strech_arrow = "<div class='horizontal' id='boxno13'>";
+    strech_arrow += "<div class='strech' style='width:" + 100 + "%'>";
+    strech_arrow += "<img class='left_arrow' src='assets/images/leftA.png'>";
+    strech_arrow += "<img class='line' src='assets/images/line.png'>";
+    strech_arrow += "<img class='right_arrow' src='assets/images/rightA.png'>";
+    strech_arrow += "</div></div>";
+    questionDiv.innerHTML += content;
+    questionDiv.innerHTML += strech_arrow;
+    content = "<div class='numberPlacing' id='drop_container'>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>" + resultArray[3] + "</div>";
+    content += "</div>"
+    questionDiv.innerHTML += content;
+    //Drag_source
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
 }
 
 function checkanswer(answerkey) {

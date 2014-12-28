@@ -48,10 +48,13 @@ function generateQuestion() {
     }
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            var arr = JSON.parse(xmlhttp.responseText);
+            var qns = JSON.parse(xmlhttp.responseText)[0];
 
-
-
+            //decode qns
+            var qnsArr = qns.qns.split("&");
+            //qnsArr[0] text
+            //qnsArr[2,3,4] para
+            //qnsArr[5,6] lable
 
             var s = '<input type="text" id="check" name="check">'; //Create one textbox as HTML
             document.getElementById("answer").innerHTML = "Enter your answer :";
@@ -60,7 +63,7 @@ function generateQuestion() {
             document.getElementById("answer").innerHTML += btn;
         }
     }
-    xmlhttp.open("GET","getQues.php?type=MODAL_A1",true);
+    xmlhttp.open("GET","getQues.php?type=MODAL"+selecttype,true);
     xmlhttp.send();
 }
 

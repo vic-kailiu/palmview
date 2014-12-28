@@ -372,11 +372,11 @@
                   <div class="col-lg-12">
                     <button type="button" class="btn btn-success" onclick="generateQuestion()">Generate Question</button>                               
                     <select id="selecttype" class="btn btn-theme dropdown-toggle">
-                      <option value="">Random (+,-,x,/)</option>
-                      <option value="A">Addition (+)</option>
-                      <option value="S">Subtraction (-)</option>
-                      <option value="M">Multiplication (x)</option>
-                      <option value="D">Division (/)</option>
+                      <option value="%">Random (+,-,x,/)</option>
+                      <option value="_A%">Addition (+)</option>
+                      <option value="_S%">Subtraction (-)</option>
+                      <option value="_M%">Multiplication (x)</option>
+                      <option value="_D%">Division (/)</option>
                     </select>
                   </div>
                 </div>

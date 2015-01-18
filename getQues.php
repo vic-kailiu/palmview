@@ -20,18 +20,28 @@ catch (Exception $e)
 	die("[$fileName][$lineNumber] Database error: " . $e->getMessage() . '<br />');
 }
 
-$q = rand (1, $rc);
+$outp = "[";
 
-for($i=0;$i<$q;$i++){
-    $pstmt->fetch(PDO::FETCH_ASSOC);
+for($k=0;$k<2;$k++){
+
+	$q = rand (1, $rc);
+
+	for($i=0;$i<$q;$i++){
+	    $pstmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+	if ($k!=0)
+		$outp .=',';
+
+	$outp .= "{";
+	$outp .= '"id":"'	.$id.	'", ';
+	$outp .= '"type":"'.$qtype.	'", ';
+	$outp .= '"qns":"'	.$qns.	'", ';
+	$outp .= '"ans":"'	.$ans.	'"';
+	$outp .="}";
 }
 
-$outp = "[{";
-$outp .= '"id":"'	.$id.	'", ';
-$outp .= '"type":"'.$qtype.	'", ';
-$outp .= '"qns":"'	.$qns.	'", ';
-$outp .= '"ans":"'	.$ans.	'"';
-$outp .="}]";
 
+$outp .="]";
 echo($outp);
 ?>

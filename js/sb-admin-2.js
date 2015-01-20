@@ -28,7 +28,12 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-var qnss;
+// for each time the user hit the generate button, if the selecttype doesn't change and there is already a question set, then
+// the system will just randome select question from the previously retrieved questions. otherwise, it will query to the server
+// for more questions.
+var qnss = null;
+var _selecttype = null;
+var qnssIndex = 1000;
 
 function generateQuestion() {
     var selecttype = document.getElementById('selecttype').value;
@@ -66,7 +71,8 @@ function generateQuestion() {
 
     //var CountDiv = document.getElementById('rCount').innerHTML;
 
-    if (qnss == null) {
+
+    if (qnss == null || _selecttype != selecttype) {
         if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp = new XMLHttpRequest();
@@ -77,15 +83,24 @@ function generateQuestion() {
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 qnss = JSON.parse(xmlhttp.responseText);
-                generate(qnss[0]);
+                qnssIndex = 0;
+                generate( qnss[qnssIndex] );
             }
         }
         xmlhttp.open("GET","getQues.php?type=MODAL"+selecttype,true);
         xmlhttp.send();
     }
     else {
-        generate(qnss[getRandomInt(0,1)]);
+        qnssIndex += 1;
+        if (qnssIndex < qnss.length )
+        	generate( qnss[qnssIndex] );
+        else {
+        	qnss = null;
+        	generateQuestion();
+        }
     }
+
+    _selecttype = selecttype;
 }
 
 function generate(qns) {
@@ -121,16 +136,14 @@ function generate(qns) {
     }
     textDiv.innerHTML += content;
 
-    var answerkey = qns.ans;
-
     //Question
     switch(qns.type) {
         case "MODAL_A1": generateA1(qnsArr); break;
         case "MODAL_A2": generateA2(qnsArr); break;
-        case "MODAL_B1": generateB1(qnsArr); break;
-        case "MODAL_B2": generateB2(qnsArr); break;
-        case "MODAL_C1": generateC1(qnsArr); break;
-        case "MODAL_C2": generateC2(qnsArr); break;
+        case "MODAL_S1": generateS1(qnsArr); break;
+        case "MODAL_S2": generateS2(qnsArr); break;
+        case "MODAL_M1": generateM1(qnsArr); break;
+        case "MODAL_M2": generateM2(qnsArr); break;
         case "MODAL_D1": generateD1(qnsArr); break;
         case "MODAL_D2": generateD2(qnsArr); break;
     }
@@ -138,8 +151,10 @@ function generate(qns) {
     var s = '<input type="text" id="check" name="check">'; //Create one textbox as HTML
     document.getElementById("answer").innerHTML = "Enter your answer :";
     document.getElementById("answer").innerHTML += s + "  ";
-    var btn = "<button type='button' class='btn btn-success' onclick='checkanswer(" + answerkey + ")'>Check Answer</button>";
+    var btn = "<button type='button' class='btn btn-success' onclick='checkanswer(" + qns.ans + ")'>Check Answer</button>";
     document.getElementById("answer").innerHTML += btn;
+
+    qns.id = -1;
 }
 
 function generateA1(qnsArr) {
@@ -260,10 +275,12 @@ function generateA2(qnsArr) {
 
 function generateS1(qnsArr) {
     var questionDiv = document.getElementById('question');
-            if (!questionDiv) {
-                alert("cannot get question div!");
-                return;
-            }
+    if (!questionDiv) {
+        alert("cannot get question div!");
+        return;
+    }
+    questionDiv.innerHTML = ""; //reset content
+
    //line and boxes
     var content = "<div class='numberPlacing' id='drop_container'>";
     for (i = 0; i < 2; i++) {

@@ -20,27 +20,37 @@ catch (Exception $e)
 	die("[$fileName][$lineNumber] Database error: " . $e->getMessage() . '<br />');
 }
 
+// generate ramdom number within range
+$numbers = range(0, $rc-1);
+shuffle($numbers);
+$seeds = array_slice($numbers, 0, 5);
+sort($seeds);
+$arrlength = count($seeds);
+
 $outp = "[";
 
-for($k=0;$k<2;$k++){
+$index = 0;
+for($k=0;$k<$rc;$k++){
+	$pstmt->fetch(PDO::FETCH_ASSOC);
 
-	$q = rand (1, $rc);
+	if ($k == $seeds[$index]) {
+		if ($index!=0)
+			$outp .=',';
 
-	for($i=0;$i<$q;$i++){
-	    $pstmt->fetch(PDO::FETCH_ASSOC);
+		$outp .= "{";
+		$outp .= '"id":"'	.$id.	'", ';
+		$outp .= '"type":"'.$qtype.	'", ';
+		$outp .= '"qns":"'	.$qns.	'", ';
+		$outp .= '"ans":"'	.$ans.	'"';
+		$outp .="}";
+
+		$index++;
 	}
 
-	if ($k!=0)
-		$outp .=',';
-
-	$outp .= "{";
-	$outp .= '"id":"'	.$id.	'", ';
-	$outp .= '"type":"'.$qtype.	'", ';
-	$outp .= '"qns":"'	.$qns.	'", ';
-	$outp .= '"ans":"'	.$ans.	'"';
-	$outp .="}";
+	if ($index >= $arrlength) {
+		break;
+	}
 }
-
 
 $outp .="]";
 echo($outp);

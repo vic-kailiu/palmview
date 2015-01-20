@@ -1,22 +1,15 @@
 <?php   
-  include( 'session.php');
-   
-  //echo "'$_POST[txtFld]'";
-  //  $name = $_SESSION["userName"];
-  // $sql = "INSERT INTO studentinfo ".
-  // "(Name, Nric, Time, TimeStamp, TypeOfQns, QuizResult) ".
-  // "VALUES('$name','S1232323J','$_POST[txtFld]', NOW()+ INTERVAL 1 HOUR, 'Practice','$_POST[txtQnsID]')";
-  // $retval = mysql_query( $sql, $con );
+  include('session.php');
 
-  // $sql2 = "INSERT INTO Keyword ".
-  // "(Name, Keywords, TimeStamp) ".
-  // "VALUES('$name','$_POST[txtKeyword]',NOW()+ INTERVAL 1 HOUR)";
-  // $retval2 = mysql_query( $sql2, $con );
+  $sessionID = session_id();
+  $userID = $_SESSION['id'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
+    <script src="js/log.js"></script>
     <script>
+      var log = new Array();
       function getHiddenProp(){
           var prefixes = ['webkit','moz','ms','o'];
           // if 'hidden' is natively supported just return it
@@ -43,80 +36,55 @@
       }
       
       function visChange() {
-        var timestamp;
+        //var timestamp;
         // Date() prototype does not provide native number padding - let's add a method:
-        Date.prototype.pad = function(integer) {
-            var result;
-            // Can't decide between ternary and slicing
-            // result = ("0" + integer).slice(-2); 
-            result = integer < 10 ? "0" + integer : integer;
-            return result;
-            };
+        // Date.prototype.pad = function(integer) {
+        //     var result;
+        //     // Can't decide between ternary and slicing
+        //     // result = ("0" + integer).slice(-2); 
+        //     result = integer < 10 ? "0" + integer : integer;
+        //     return result;
+        //     };
       
-        // Create a new Date() instance and add day, time and now properties
-        timestamp = new Date();
+       //  // Create a new Date() instance and add day, time and now properties
+       //  timestamp = new Date();
         
-        // Reorder the array entries to your own needs
-        timestamp.day = [
-            timestamp.pad(timestamp.getDate()),
-            timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
-            timestamp.getFullYear()
-        ];
+       //  // Reorder the array entries to your own needs
+       //  timestamp.day = [
+       //      timestamp.pad(timestamp.getDate()),
+       //      timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
+       //      timestamp.getFullYear()
+       //  ];
         
-        timestamp.time = [
-            timestamp.pad(timestamp.getHours()),
-            timestamp.pad(timestamp.getMinutes()),
-            timestamp.pad(timestamp.getSeconds())
-        ];
+       //  timestamp.time = [
+       //      timestamp.pad(timestamp.getHours()),
+       //      timestamp.pad(timestamp.getMinutes()),
+       //      timestamp.pad(timestamp.getSeconds())
+       //  ];
       
-        timestamp.now = timestamp.time.join("");
+       //  timestamp.now = timestamp.time.join("");
       
-       var txtFld = document.getElementById('visChangeText');
+       // var txtFld = document.getElementById('visChangeText');
     
-       if (txtFld) {
-          if (isHidden()){
-           txtFld.value += "TimeOut: "+ timestamp.now+"\n";    
-           console.log("timeOff: "+timestamp.now);
-          }
-          else{
-            txtFld.value += "TimeIn: "+timestamp.now+"\n";
-            console.log("timeIn: "+timestamp.now);
-          }
+        if (isHidden()){
+          log.push([<?php echo $userID;?>,16,getSQLTimeString(new Date()),'inactive','null','null','null','null','null','<?php echo $sessionID;?>']);
+         // txtFld.value += "TimeOut: "+ timestamp.now+"\n";    
+         // console.log("timeOff: "+timestamp.now);
         }
+        else{
+          log.push([<?php echo $userID;?>,16,getSQLTimeString(new Date()),'active','null','null','null','null','null','<?php echo $sessionID;?>']);
+          // txtFld.value += "TimeIn: "+timestamp.now+"\n";
+          // console.log("timeIn: "+timestamp.now);
+        }   
       }
       
-      function myFun() {
-        var timestamp;
-      
-        // Date() prototype does not provide native number padding - let's add a method:
-        Date.prototype.pad = function(integer) {
-          var result;
-          // Can't decide between ternary and slicing
-          // result = ("0" + integer).slice(-2); 
-          result = integer < 10 ? "0" + integer : integer;
-          return result;
-        };
-      
-        // Create a new Date() instance and add day, time and now properties
-        timestamp = new Date();
-        
-        // Reorder the array entries to your own needs
-        timestamp.day = [
-            timestamp.pad(timestamp.getDate()),
-            timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
-            timestamp.getFullYear()
-        ];
-        
-        timestamp.time = [
-            timestamp.pad(timestamp.getHours()),
-            timestamp.pad(timestamp.getMinutes()),
-            timestamp.pad(timestamp.getSeconds())
-        ];
-        
-        timestamp.now = timestamp.time.join("");
-        //timestamp.now = timestamp.day.join("") + timestamp.time.join(""); //can have date too
-        
-        console.log("Time Start: "+timestamp.now);
+      function logEndActivity(){
+        //log activity score
+        //var cur = new Date();
+        //var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
+        //log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'stop','null','null',duration,'null','null','<?php echo $sessionID;?>']);
+        logIntoServer(log);
+        log = [];
       }
     </script>
       <meta charset="utf-8">
@@ -145,7 +113,7 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
       <![endif]-->
    </head>
-   <body>
+   <body onunload="logEndActivity()">
       <section id="container" >
          <!-- TOP BAR CONTENT & NOTIFICATIONS -->
          <!--header start-->
@@ -390,9 +358,9 @@
                     <div id="text"></div>
                   </div>
                   <!-- Keywords -->
-                  <div class="col-sm-5">
-                    <!-- <div name ="keyword" id="keywords"></div> -->
-                  </div>
+                  <!-- <div class="col-sm-5">
+                    <div name ="keyword" id="keywords" />
+                  </div> -->
                 </div>
                 <!-- /.row -->
                 <!-- For Question -->

@@ -36,36 +36,6 @@
       }
       
       function visChange() {
-        //var timestamp;
-        // Date() prototype does not provide native number padding - let's add a method:
-        // Date.prototype.pad = function(integer) {
-        //     var result;
-        //     // Can't decide between ternary and slicing
-        //     // result = ("0" + integer).slice(-2); 
-        //     result = integer < 10 ? "0" + integer : integer;
-        //     return result;
-        //     };
-      
-       //  // Create a new Date() instance and add day, time and now properties
-       //  timestamp = new Date();
-        
-       //  // Reorder the array entries to your own needs
-       //  timestamp.day = [
-       //      timestamp.pad(timestamp.getDate()),
-       //      timestamp.pad(timestamp.getMonth() + 1), // getMonth() returns 0 to 11
-       //      timestamp.getFullYear()
-       //  ];
-        
-       //  timestamp.time = [
-       //      timestamp.pad(timestamp.getHours()),
-       //      timestamp.pad(timestamp.getMinutes()),
-       //      timestamp.pad(timestamp.getSeconds())
-       //  ];
-      
-       //  timestamp.now = timestamp.time.join("");
-      
-       // var txtFld = document.getElementById('visChangeText');
-    
         if (isHidden()){
           log.push([<?php echo $userID;?>,16,getSQLTimeString(new Date()),'inactive','null','null','null','null','null','<?php echo $sessionID;?>']);
          // txtFld.value += "TimeOut: "+ timestamp.now+"\n";    
@@ -79,10 +49,6 @@
       }
       
       function logEndActivity(){
-        //log activity score
-        //var cur = new Date();
-        //var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
-        //log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'stop','null','null',duration,'null','null','<?php echo $sessionID;?>']);
         logIntoServer(log);
         log = [];
       }
@@ -395,8 +361,6 @@
         </section>
         <!--/wrapper -->
       </section>
-
-
         
         <!-- /MAIN CONTENT -->
         <!--main content end-->
@@ -415,7 +379,6 @@
       <script src="js/jquery.js"></script>
       <script src="js/jquery-1.8.3.min.js"></script>
       <script src="js/bootstrap.min.js"></script>
-      <script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
       <script src="js/jquery.scrollTo.min.js"></script>
       <script src="js/jquery.nicescroll.js" type="text/javascript"></script>
       <script src="js/jquery.sparkline.js"></script>

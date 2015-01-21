@@ -9,13 +9,12 @@ function logIntoServer(log){
 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	}
 	var query = generateSQL(log);
-	xmlhttp.open("GET","../ajax_log.php?query="+query,true);
-	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	 xmlhttp.onreadystatechange=function(){
+	xmlhttp.onreadystatechange=function(){
 		if (xmlhttp.readyState==4 && xmlhttp.status==200){
 			alert(xmlhttp.responseText);
 		}
-	} 
+	}
+	xmlhttp.open("GET","ajax_log.php?query="+query,true);
 	xmlhttp.send();
 }
 function getSQLTimeString(date){

@@ -1,235 +1,23 @@
-<?php include( 'session.php'); ?>
+<?php
+   include( 'session.php'); 
+
+   $sessionID = session_id();
+   $userID = $_SESSION['id'];
+?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description" content="">
-      <meta name="author" content="Dashboard">
-      <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
       <title>SEEP; Palm View Pri Online Portal</title>
-      <!-- Bootstrap core CSS -->
-      <link href="css/bootstrap.css" rel="stylesheet">
-      <!--external css-->
-      <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
-      <link rel="stylesheet" type="text/css" href="css/zabuto_calendar.css">
-      <link rel="stylesheet" type="text/css" href="js/gritter/css/jquery.gritter.css" />
-      <link rel="stylesheet" type="text/css" href="lineicons/style.css">
-      <link href="css/buttons.css" type="text/css" rel="stylesheet">
-      <!-- Custom styles for this template -->
-      <link href="css/style.css" rel="stylesheet">
-      <link href="css/style-responsive.css" rel="stylesheet">
+
+      <?php include('comm_header.html'); ?>
+
       <script src="js/chart-master/Chart.js"></script>
-      <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-      <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-      <![endif]-->
+
    </head>
-   <body>
+   <body onunload="logEndActivity()">
       <section id="container" >
-         <!-- TOP BAR CONTENT & NOTIFICATIONS -->
-         <!--header start-->
-         <header class="header black-bg">
-            <div class="sidebar-toggle-box">
-               <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
-            </div>
-            <!--logo start-->
-            <a href="dashboard.php" class="logo"><b>SEEP</b></a>
-            <!--logo end-->
-            <div class="nav notify-row" id="top_menu">
-               <!--  notification start -->
-               <ul class="nav top-menu">
-                  <!-- settings start -->
-                  <li class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
-                     <i class="fa fa-tasks"></i>
-<!--                      <span class="badge bg-theme">4</span>-->
-                      </a>
-                     <ul class="dropdown-menu extended tasks-bar">
-                        <div class="notify-arrow notify-arrow-green"></div>
-                        <li>
-                           <p class="green">You have no pending tasks</p>
-                        </li>
-                        <!-- <li>
-                           <a href="teaching.php#">
-                              <div class="task-info">
-                                 <div class="desc">Video Guide</div>
-                                 <div class="percent">85%</div>
-                              </div>
-                              <div class="progress progress-striped active">
-                                 <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
-                                    <span class="sr-only">85% Complete (success)</span>
-                                 </div>
-                              </div>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="practice.php#">
-                              <div class="task-info">
-                                 <div class="desc">Practice Questions</div>
-                                 <div class="percent">60%</div>
-                              </div>
-                              <div class="progress progress-striped active">
-                                 <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
-                                    <span class="sr-only">60% Complete (warning)</span>
-                                 </div>
-                              </div>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="quiz.php#">
-                              <div class="task-info">
-                                 <div class="desc">Quiz Questions</div>
-                                 <div class="percent">20%</div>
-                              </div>
-                              <div class="progress progress-striped active">
-                                 <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
-                                    <span class="sr-only">20% Complete (Important)</span>
-                                 </div>
-                              </div>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="dashboard.php#">
-                              <div class="task-info">
-                                 <div class="desc">Review Model Drawing</div>
-                                 <div class="percent">70%</div>
-                              </div>
-                              <div class="progress progress-striped active">
-                                 <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
-                                    <span class="sr-only">70% Complete (Important)</span>
-                                 </div>
-                              </div>
-                           </a>
-                        </li>
-                        <li class="external">
-                           <a href="todo_list.php#">See All Tasks</a>
-                        </li> -->
-                     </ul>
-                  </li>
-                  <!-- settings end -->
-                  <!-- inbox dropdown start-->
-                  <li id="header_inbox_bar" class="dropdown">
-                     <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
-                     <i class="fa fa-envelope-o"></i>
-                     <!-- <span class="badge bg-theme">3</span> -->
-                     </a>
-                     <ul class="dropdown-menu extended inbox">
-                        <div class="notify-arrow notify-arrow-green"></div>
-                        <li>
-                           <p class="green">You have no new messages</p>
-                        </li>
-                        <!-- <li>
-                           <a href="dashboard.php#">
-                           <span class="photo"><img alt="avatar" src="img/friends/fr-02.jpg"></span>
-                           <span class="subject">
-                           <span class="from">Andy Khong</span>
-                           <span class="time">Just now</span>
-                           </span>
-                           <span class="message">
-                           Please do your homework.
-                           </span>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="dashboard.php#">
-                           <span class="photo"><img alt="avatar" src="img/ny.jpg"></span>
-                           <span class="subject">
-                           <span class="from">Cheryl</span>
-                           <span class="time">25 mins.</span>
-                           </span>
-                           <span class="message">
-                           Hi, how is everything?
-                           </span>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="dashboard.php#">
-                           <span class="photo"><img alt="avatar" src="img/friends/fr-11.jpg"></span>
-                           <span class="subject">
-                           <span class="from">Palm View Admin</span>
-                           <span class="time">40 mins.</span>
-                           </span>
-                           <span class="message">
-                           You are allowed to cheat in exams.
-                           </span>
-                           </a>
-                        </li>
-                        <li>
-                           <a href="dashboard.php#">See all messages</a>
-                        </li> -->
-                     </ul>
-                  </li>
-                  <!-- inbox dropdown end -->
-               </ul>
-               <!--  notification end -->
-            </div>
-            <div class="top-menu">
-               <ul class="nav pull-right top-menu">
-                  <li><a class="logout" href="logout.php">Logout</a></li>
-               </ul>
-            </div>
-         </header>
-         <!--header end-->
-         <!-- MAIN SIDEBAR MENU -->
-         <!--sidebar start-->
-         <aside>
-            <div id="sidebar"  class="nav-collapse ">
-               <!-- sidebar menu start-->
-               <ul class="sidebar-menu" id="nav-accordion">
-                  <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
-                  <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
-                  <li class="mt">
-                     <a class="active" href="dashboard.php">
-                     <i class="fa fa-dashboard"></i>
-                     <span>Dashboard</span>
-                     </a>
-                  </li>
-                  <li class="sub-menu">
-                     <a href="javascript:;" >
-                     <i class="fa fa-book"></i>
-                     <span>My Student Guide</span>
-                     </a>
-                     <ul class="sub">
-                        <li><a  href="calendar.php">Calendar</a></li>
-                        <li><a  href="todo_list.php">Todo List</a></li>
-                     </ul>
-                  </li>
-                  <li class="sub-menu">
-                     <a  href="teaching.php">
-                     <i class="fa fa-pencil"></i>
-                     <span>Model Drawing - Tutorial</span>
-                     </a>
-                  </li>
-                  <li class="sub-menu">
-                     <a  href="practice.php">
-                     <i class="fa fa-pencil"></i>
-                     <span>Model Drawing - Practice</span>
-                     </a>
-                  </li>
-                  <li class="sub-menu">
-                     <a  href="quiz.php">
-                     <i class="fa fa-pencil"></i>
-                     <span>Model Drawing - Quiz</span>
-                     </a>
-                  </li>
-                  <!-- <li class="sub-menu">
-                     <a href="javascript:;" >
-                     <i class="fa fa-pencil"></i>
-                     <span>Model Drawing</span>
-                     </a>
-                     <ul class="sub">
-                        <li><a  href="teaching.php">Video Guide</a></li>
-                        <li><a  href="practice.php">Practice Questions</a></li>
-                        <li><a  href="quiz.php">Quiz Questions</a></li>
-                     </ul>
-                  </li> -->
-               </ul>
-               <!-- sidebar menu end-->
-            </div>
-         </aside>
-         <!--sidebar end-->
+         <?php include('comm_frame.html'); ?>
+
          <!-- MAIN CONTENT -->
          <!--main content start-->
          <section id="main-content">
@@ -435,40 +223,32 @@
          <!--footer end-->
       </section>
       <!-- js placed at the end of the document so the pages load faster -->
-      <script src="js/jquery.js"></script>
-      <script src="js/jquery-1.8.3.min.js"></script>
-      <script src="js/bootstrap.min.js"></script>
-      <script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
-      <script src="js/jquery.scrollTo.min.js"></script>
-      <script src="js/jquery.nicescroll.js" type="text/javascript"></script>
-      <script src="js/jquery.sparkline.js"></script>
-      <!--common script for all pages-->
-      <script src="js/common-scripts.js"></script>
-      <script type="text/javascript" src="js/gritter/js/jquery.gritter.js"></script>
-      <script type="text/javascript" src="js/gritter-conf.js"></script>
+      <?php include('comm_js.html'); ?>
+
       <!--script for this page-->
       <script src="js/sparkline-chart.js"></script>    
       <script src="js/zabuto_calendar.js"></script>    
       
-      // <script type="text/javascript">
-      //    $(document).ready(function () {
-      //    var unique_id = $.gritter.add({
-      //        // (string | mandatory) the heading of the notification
-      //        title: 'Moblie Learning Update',
-      //        // (string | mandatory) the text inside the notification
-      //        text: 'SEEP app is now available on iOS and Google Play. Click <b>here</b> to download app.',
-      //        // (string | optional) the image to display on the left
-      //        image: 'img/friends/fr-09.jpg',
-      //        // (bool | optional) if you want it to fade out on its own or just sit there
-      //        sticky: true,
-      //        // (int | optional) the time you want it to be alive for before fading out
-      //        time: '',
-      //        // (string | optional) the class name you want to apply to that specific message
-      //        class_name: 'my-sticky-class'
-      //    });
-      //    return false;
-      //    });
-      // </script>
+      <script type="text/javascript">
+         $(document).ready(function () {
+            $('#mn_dashboard').addClass('active')
+            /*var unique_id = $.gritter.add({
+                // (string | mandatory) the heading of the notification
+                title: 'Moblie Learning Update',
+                // (string | mandatory) the text inside the notification
+                text: 'SEEP app is now available on iOS and Google Play. Click <b>here</b> to download app.',
+                // (string | optional) the image to display on the left
+                image: 'img/friends/fr-09.jpg',
+                // (bool | optional) if you want it to fade out on its own or just sit there
+                sticky: true,
+                // (int | optional) the time you want it to be alive for before fading out
+                time: '',
+                // (string | optional) the class name you want to apply to that specific message
+                class_name: 'my-sticky-class'
+            });*/
+            return false;
+         });
+      </script>
       <script type="application/javascript">
          $(document).ready(function () {
              $("#date-popover").popover({html: true, trigger: "manual"});
@@ -484,10 +264,10 @@
                  action_nav: function () {
                      return myNavFunction(this.id);
                  },
-                 ajax: {
-                     url: "show_data.php?action=1",
-                     modal: true
-                 },
+                 // ajax: {
+                 //     url: "show_data.php?action=1",
+                 //     modal: true
+                 // },
                  legend: [
                      {type: "text", label: "Special event", badge: "00"},
                      {type: "block", label: "Regular event", }

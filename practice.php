@@ -105,7 +105,7 @@
       </section>
       <!-- js placed at the end of the document so the pages load faster -->
       <?php include('comm_js.html'); ?>
-
+      <?php include('dialog.html'); ?>
       <script src="js/sb-admin-2.js"></script>
       <script>
         $(document).ready(function () {

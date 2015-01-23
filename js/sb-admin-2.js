@@ -35,6 +35,8 @@ var qnss = null;
 var _selecttype = null;
 var qnssIndex = 1000;
 var startTime = -1;
+var session_difficulty = 4;
+var question_difficulty = -1;
 
 function generateQuestion() {
     var selecttype = document.getElementById('selecttype').value;
@@ -567,12 +569,48 @@ function checkanswer(answerkey) {
     var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
     if (ck == answerkey) {
         logPractice("submission", 'null', currentQnsId, 'null', 1, cur, duration);
-        alert("CORRECT ANSWER!");
+        $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
+          resizable: false,
+          height:180,
+          modal: true,
+          buttons: {
+            "Next Question": function() {
+              //$( this ).dialog( "close" );
+              generateQuestion();
+            },
+            Cancel: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        });
+        //alert("CORRECT ANSWER!");
         //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Correct" + "\n";
         //document.getElementById("submitt").click();
     } else {
         logPractice("submission", 'null', currentQnsId, 'null', 0, cur, duration);
-        alert("WRONG ANSWER! CORRECT ANSWER IS " + answerkey);
+        //alert("WRONG ANSWER! CORRECT ANSWER IS " + answerkey);
+         $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
+          resizable: false,
+          modal: true,
+          buttons: {
+            "Try Again": function() {
+              $( this ).dialog( "close" );
+              //generateQuestion();
+            },
+            "Make it easier": function() {
+              $( this ).dialog( "close" );
+              //generateQuestion();
+            },
+            "Next Question": function() {
+                generateQuestion();
+                $( this ).dialog( "close" );
+              
+            },
+            Cancel: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        });
         //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Wrong" + "\n";
         //document.getElementById("submitt").click();
     }

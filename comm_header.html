@@ -40,16 +40,32 @@ if (visProp) {
   document.addEventListener(evtname, visChange);
 }
 
+var inactiveTime;
+
 function visChange() {
   if (isHidden()){
-    log.push([<?php echo $userID;?>,16,getSQLTimeString(new Date()),'inactive','null','null','null','null','null','<?php echo $sessionID;?>']);
+    inactiveTime = new Date();
+    // log.push([<?php echo $userID;?>,<?php echo $phaseID;?>,getSQLTimeString(new Date()),'inactive','null','null','null','null','null','<?php echo $sessionID;?>']);
   }
   else{
-    log.push([<?php echo $userID;?>,16,getSQLTimeString(new Date()),'active','null','null','null','null','null','<?php echo $sessionID;?>']);
-  }   
+    var cur = new Date();
+    var duration = 60*60*1000*(cur.getHours()-inactiveTime.getHours())+60*1000*(cur.getMinutes()-inactiveTime.getMinutes())+1000*(cur.getSeconds()-inactiveTime.getSeconds())+(cur.getMilliseconds()-inactiveTime.getMilliseconds());
+    log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'pageActivity','null','alt_page',duration,'null','null','<?php echo $sessionID;?>']);
+  }
+}
+
+var startTime;
+
+function logStartActivity(){
+  startTime  = new Date();
+  log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(startTime),'start','null','null','null','null','null','<?php echo $sessionID;?>']);
 }
 
 function logEndActivity(){
+  var cur = new Date();
+  var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
+  log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'stop','null','null',duration,'null','null','<?php echo $sessionID;?>']);
+          
   logIntoServer(log);
   log = [];
 }

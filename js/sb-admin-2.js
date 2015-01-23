@@ -34,6 +34,7 @@ function getRandomInt(min, max) {
 var qnss = null;
 var _selecttype = null;
 var qnssIndex = 1000;
+var startTime = -1;
 
 function generateQuestion() {
     var selecttype = document.getElementById('selecttype').value;
@@ -46,13 +47,13 @@ function generateQuestion() {
     }
     textDiv.innerHTML = "";
 
-    //Keyword section
+/*    //Keyword section
     var keywordDiv = document.getElementById('keywords');
     if (!keywordDiv) {
         alert("cannot get keywords div!");
         return;
     }
-    keywordDiv.value = ""; //reset content
+    keywordDiv.value = ""; //reset content*/
 
     var questionDiv = document.getElementById('question');
             if (!questionDiv) {
@@ -103,9 +104,12 @@ function generateQuestion() {
     _selecttype = selecttype;
 }
 
+var currentQnsId = -1;
+
 function generate(qns) {
     //decode qns
     var qnsArr = qns.qns.split("&");
+    currentQnsId = qns.id;
     //qnsArr[0] text
     //qnsArr[1,2,3] para
     //qnsArr[4,5] lable
@@ -155,6 +159,9 @@ function generate(qns) {
     document.getElementById("answer").innerHTML += btn;
 
     qns.id = -1;
+    loadScript();
+    startTime = new Date();
+    logPractice('mouseClick', 'qnsStart', currentQnsId, 'null', 'null', startTime, 'null');
 }
 
 function generateA1(qnsArr) {
@@ -548,27 +555,38 @@ function generateD2(qnsArr) {
     dragDiv.innerHTML = ""; //reset content
 }
 
+function loadScript() {
+  $("input").change(function(event){
+    logPractice("keyPres", "answer", currentQnsId, event.currentTarget.value, 'null', getSQLTimeString(new Date()), 'null');
+  });
+}
+
 function checkanswer(answerkey) {
     var ck = document.getElementById("check").value;
+    var cur = new Date();
+    var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
     if (ck == answerkey) {
+        logPractice("submission", 'null', currentQnsId, 'null', 1, cur, duration);
         alert("CORRECT ANSWER!");
-        document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Correct" + "\n";
-        document.getElementById("submitt").click();
+        //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Correct" + "\n";
+        //document.getElementById("submitt").click();
     } else {
-        alert("TOO BAD WRONG ANSWER! CORRECT ANSWER IS " + answerkey);
-        document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Wrong" + "\n";
-        document.getElementById("submitt").click();
+        logPractice("submission", 'null', currentQnsId, 'null', 0, cur, duration);
+        alert("WRONG ANSWER! CORRECT ANSWER IS " + answerkey);
+        //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Wrong" + "\n";
+        //document.getElementById("submitt").click();
     }
 }
 
 function highlight(e) {
-    var keywordDiv = document.getElementById('keywords');
+    //var keywordDiv = document.getElementById('keywords');
     $(this).css('background-color', 'yellow');
-    if (!keywordDiv) {
+    logPractice("mouseClick", "highlight", currentQnsId, $(this).text(), 'null', getSQLTimeString(new Date()), 'null');
+    /*if (!keywordDiv) {
         alert("cannot get keywords div!");
         return;
     }
-    keywordDiv.value += e.target.textContent + " " + "\n";
+    keywordDiv.value += e.target.textContent + " " + "\n";*/
 }
 
 function allowDrop(ev) {
@@ -577,11 +595,13 @@ function allowDrop(ev) {
 
 function drag(ev) {
     ev.dataTransfer.setData("text/html", ev.target.id);
+    logPractice("mouseDrag", "drag", currentQnsId, ev.target.textContent, 'null', getSQLTimeString(new Date()), 'null');
 }
 
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text/html");
+    logPractice("mouseDrag", "drop", currentQnsId, ev.target.textContent, ~~(ev.target.id[ev.target.id.length-1] == data[data.length-1]), getSQLTimeString(new Date()), 'null');
     ev.target.appendChild(document.getElementById(data));
 }
 

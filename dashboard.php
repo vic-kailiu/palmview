@@ -3,6 +3,7 @@
 
    $sessionID = session_id();
    $userID = $_SESSION['id'];
+   $phaseID = 16;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +15,7 @@
       <script src="js/chart-master/Chart.js"></script>
 
    </head>
-   <body onunload="logEndActivity()">
+   <body onload="logStartActivity()" onunload="logEndActivity()">
       <section id="container" >
          <?php include('comm_frame.html'); ?>
 

@@ -7,7 +7,7 @@
 
   try{
     $pstmt = $dbConn->prepare(
-    'SELECT qns,ans,opt1,opt2,opt3,opt4,qID FROM QUESTIONDB WHERE phaseID = 2 ORDER BY RAND() LIMIT 10;');
+    'SELECT qns,ans,opt1,opt2,opt3,opt4,qID FROM QUESTIONDB WHERE phaseID = 17 ORDER BY RAND() LIMIT 10;');
     $pstmt->execute(array($phaseID));
     $pstmt->bindColumn(1,$q);
     $pstmt->bindColumn(2,$a);
@@ -128,7 +128,7 @@
       <script src="js/sb-admin-2.js"></script>
       <script>
         $(document).ready(function () {
-          $('#mn_practice').addClass('active');
+          $('#mn_practice_mcq').addClass('active');
           return false;
         });
 

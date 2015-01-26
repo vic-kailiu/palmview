@@ -32,15 +32,59 @@ function getRandomInt(min, max) {
 // the system will just randome select question from the previously retrieved questions. otherwise, it will query to the server
 // for more questions.
 var qnss = null;
+var currentQnss = null;
 var _selecttype = null;
 var qnssIndex = 1000;
 var startTime = -1;
-var session_difficulty = 4;
+var session_difficulty = 2;
+// 2 -- no hint
+// 1 -- number marked
+// 0 -- labeled
 var question_difficulty = -1;
 
 function generateQuestion() {
+    //by now, every time the question is set back to the original difficulty
+    question_difficulty = session_difficulty;
     var selecttype = document.getElementById('selecttype').value;
-    //Text of the question
+
+    if (qnss == null || _selecttype != selecttype) {
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                qnss = JSON.parse(xmlhttp.responseText);
+                qnssIndex = 0;
+                currentQnss = qnss[qnssIndex];
+                generate(currentQnss);
+            }
+        }
+        xmlhttp.open("GET","getQues.php?type=MODAL"+selecttype,true);
+        xmlhttp.send();
+    }
+    else {
+        qnssIndex += 1;
+        if (qnssIndex < qnss.length ) {
+            currentQnss = qnss[qnssIndex];
+            generate(currentQnss);
+        }
+        else {
+            qnss = null;
+            generateQuestion();
+        }
+    }
+
+    _selecttype = selecttype;
+}
+
+var currentQnsId = -1;
+var para;
+
+function generate(qns) {
     //Text of the question
     var textDiv = document.getElementById('text');
     if (!textDiv) {
@@ -58,13 +102,13 @@ function generateQuestion() {
     keywordDiv.value = ""; //reset content*/
 
     var questionDiv = document.getElementById('question');
-            if (!questionDiv) {
-                alert("cannot get question div!");
-                return;
-            }
-            questionDiv.innerHTML = ""; //reset content
+    if (!questionDiv) {
+        alert("cannot get question div!");
+        return;
+    }
+    questionDiv.innerHTML = ""; //reset content
 
-            //Drag_source
+    //Drag_source
     var dragDiv = document.getElementById('drag_source');
     if (!dragDiv) {
         alert("cannot get drag div!");
@@ -72,46 +116,13 @@ function generateQuestion() {
     }
     dragDiv.innerHTML = ""; //reset content
 
-    //var CountDiv = document.getElementById('rCount').innerHTML;
-
-
-    if (qnss == null || _selecttype != selecttype) {
-        if (window.XMLHttpRequest) {
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp = new XMLHttpRequest();
-        } else {
-            // code for IE6, IE5
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                qnss = JSON.parse(xmlhttp.responseText);
-                qnssIndex = 0;
-                generate( qnss[qnssIndex] );
-            }
-        }
-        xmlhttp.open("GET","getQues.php?type=MODAL"+selecttype,true);
-        xmlhttp.send();
-    }
-    else {
-        qnssIndex += 1;
-        if (qnssIndex < qnss.length )
-        	generate( qnss[qnssIndex] );
-        else {
-        	qnss = null;
-        	generateQuestion();
-        }
-    }
-
-    _selecttype = selecttype;
-}
-
-var currentQnsId = -1;
-
-function generate(qns) {
     //decode qns
     var qnsArr = qns.qns.split("&");
     currentQnsId = qns.id;
+    para = new Array();
+    para[0] = qnsArr[1];
+    para[1] = qnsArr[2];
+    para[2] = qnsArr[3];
     //qnsArr[0] text
     //qnsArr[1,2,3] para
     //qnsArr[4,5] lable
@@ -163,7 +174,7 @@ function generate(qns) {
     qns.id = -1;
     loadScript();
     startTime = new Date();
-    logPractice('mouseClick', 'qnsStart', currentQnsId, 'null', 'null', startTime, 'null');
+    logPractice('mouseClick', 'qnsStart', currentQnsId, 'null', 'null', getSQLTimeString(startTime), 'null');
 }
 
 function generateA1(qnsArr) {
@@ -178,7 +189,8 @@ function generateA1(qnsArr) {
     var content = "<div class='numberPlacing' id='drop_container'>";
     for (i = 0; i < 2; i++) {
         var count = qnsArr[1 + i] / qnsArr[3];
-        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" + qnsArr[1 + i] + "</div>";
+        content += "<div class='strech' style='width:" + (100 * count) + "%' align='center'>" 
+        + (question_difficulty > 1? "<input class='numInput' id = 'para" + i + "'>" : qnsArr[1 + i] ) + "</div>";
     }
     content += "</div>"
     questionDiv.innerHTML += content;
@@ -194,7 +206,16 @@ function generateA1(qnsArr) {
     //Create box
     for (i = 0; i < 2; i++) {
         var count = qnsArr[1 + i] / qnsArr[3];
-        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 * count) + "%' ondrop='drop(event)' ondragover='allowDrop(event)'></div>";
+        content += "<div class='box' id='box" + i.toString() + "' style='width:" + (100 * count) 
+        + "%' ondrop='handleDrop(event)' ondragover='handleDragOver(event)' ondragenter='handleDragEnter(event)' ondragleave='handleDragLeave(event)' >";
+
+        if (question_difficulty == 0) {
+            content += "<div class='model" + i.toString() + "' id='model" + i.toString() 
+                    + "' draggable='true' ondragstart='handleDragStart(event)' ondragend='handleDragEnd(event)'>";
+            content += qnsArr[4 + i] + "</div>"
+        }
+
+        content +="</div>";
     }
     content += "</div>"
     var strech_arrow = "<div class='horizontal' id='boxno13'>";
@@ -206,7 +227,8 @@ function generateA1(qnsArr) {
     questionDiv.innerHTML += content;
     questionDiv.innerHTML += strech_arrow;
     content = "<div class='numberPlacing' id='drop_container'>";
-    content += "<div class='strech' style='width:" + 100 + "%' align='center'>?</div>";
+    content += "<div class='strech' style='width:" + 100 + "%' align='center'>"
+                + (question_difficulty > 1? "<input class='numInput'>" : "?" ) +"</div>";
     content += "</div>"
     questionDiv.innerHTML += content;
     //Drag_source
@@ -220,8 +242,9 @@ function generateA1(qnsArr) {
     content = "<div class='horizontal' id='drag_container'>"
     for (i = 0; i < 2; i++) {
         var count = qnsArr[1 + i] / qnsArr[3];
-        content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model" + i.toString() + "' id='model" + i.toString() + "' draggable='true' ondragstart='drag(event)'><div class='center_text'>";
-        content += qnsArr[4 + i] + "</div></div></div>";
+        content += "<div class='box_model' style='width:" + (100 * count) + "%'><div class='model" + i.toString() + "' id='model" + i.toString() 
+                + "' draggable='true' ondragstart='handleDragStart(event)' ondragend='handleDragEnd(event)'>";
+        content += qnsArr[4 + i] + "</div></div>";
     }
     content += "</div>"
     dragDiv.innerHTML += content;
@@ -559,7 +582,18 @@ function generateD2(qnsArr) {
 
 function loadScript() {
   $("input").change(function(event){
-    logPractice("keyPres", "answer", currentQnsId, event.currentTarget.value, 'null', getSQLTimeString(new Date()), 'null');
+    if (event.target.id == "check") {
+        logPractice("keyPres", "answer", currentQnsId, event.currentTarget.value, 'null', getSQLTimeString(new Date()), 'null');
+    }
+    else {
+        correct = false;
+        if (event.target.id.indexOf("0") >= 0)
+            correct = (event.currentTarget.value == para[0]);
+        if (event.target.id.indexOf("1") >= 0)
+            correct = (event.currentTarget.value == para[1]);
+        correct = ~~ correct;
+        logPractice("keyPres", "label", currentQnsId, event.currentTarget.value, correct, getSQLTimeString(new Date()), 'null');
+    }
   });
 }
 
@@ -568,51 +602,43 @@ function checkanswer(answerkey) {
     var cur = new Date();
     var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
     if (ck == answerkey) {
-        logPractice("submission", 'null', currentQnsId, 'null', 1, cur, duration);
+        logPractice("submission", 'null', currentQnsId, 'null', 1, getSQLTimeString(cur), duration);
         $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
           resizable: false,
           height:180,
           modal: true,
           buttons: {
             "Next Question": function() {
-              //$( this ).dialog( "close" );
               generateQuestion();
+              $( this ).dialog( "close" );
             },
             Cancel: function() {
               $( this ).dialog( "close" );
             }
           }
         });
-        //alert("CORRECT ANSWER!");
-        //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Correct" + "\n";
-        //document.getElementById("submitt").click();
     } else {
-        logPractice("submission", 'null', currentQnsId, 'null', 0, cur, duration);
-        //alert("WRONG ANSWER! CORRECT ANSWER IS " + answerkey);
+        logPractice("submission", 'null', currentQnsId, 'null', 0, getSQLTimeString(cur), duration);
          $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
           resizable: false,
           modal: true,
           buttons: {
             "Try Again": function() {
               $( this ).dialog( "close" );
-              //generateQuestion();
+              //generate(currentQnss);
             },
             "Make it easier": function() {
-              $( this ).dialog( "close" );
-              //generateQuestion();
+              if (question_difficulty > 0) question_difficulty -= 1;
+              currentQnss.id = currentQnsId;    // recover the id of current question
+              generate(currentQnss);
+              ( this ).dialog( "close" );
             },
             "Next Question": function() {
                 generateQuestion();
                 $( this ).dialog( "close" );
-              
-            },
-            Cancel: function() {
-              $( this ).dialog( "close" );
             }
           }
         });
-        //document.getElementById("QnsID").value = "QuestionID " + resultArray[8] + " : Wrong" + "\n";
-        //document.getElementById("submitt").click();
     }
 }
 
@@ -630,6 +656,95 @@ function highlight(e) {
 function allowDrop(ev) {
     ev.preventDefault();
 }
+
+// Using this polyfill for safety.
+Element.prototype.hasClassName = function(name) {
+  return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(this.className);
+};
+
+Element.prototype.addClassName = function(name) {
+  if (!this.hasClassName(name)) {
+    this.className = this.className ? [this.className, name].join(' ') : name;
+  }
+};
+
+Element.prototype.removeClassName = function(name) {
+  if (this.hasClassName(name)) {
+    var c = this.className;
+    this.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), "");
+  }
+};
+
+  var cols_ = document.querySelectorAll('#drop_container.box');
+  var dragSrcEl_ = null;
+  var dragTarEl_ = null;
+
+  handleDragStart = function(e) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.id);
+
+    dragSrcEl_ = e.target;
+
+    // this/e.target is the source node.
+    e.target.addClassName('moving');
+
+    logPractice("mouseDrag", "drag", currentQnsId, e.target.textContent, 'null', getSQLTimeString(new Date()), 'null');
+  };
+
+  handleDragOver = function(e) {
+    if (e.preventDefault) {
+      e.preventDefault(); // Allows us to drop.
+    }
+
+    e.dataTransfer.dropEffect = 'move';
+
+    return false;
+  };
+
+  handleDragEnter = function(e) {
+    e.target.addClassName('over');
+    dragTarEl_ = e.target;
+  };
+
+  handleDragLeave = function(e) {
+    // this/e.target is previous target element.
+    e.target.removeClassName('over');
+  };
+
+  handleDrop = function(e) {
+    // this/e.target is current target element.
+    if (e.stopPropagation) {
+      e.stopPropagation(); // stops the browser from redirecting.
+    }
+
+    // Don't do anything if we're dropping on the same column we're dragging.
+    if (dragSrcEl_ != e.target) {
+      //dragSrcEl_.innerHTML = this.innerHTML;
+      var data = e.dataTransfer.getData("text/html");
+      target = e.target;
+      while (!target.classList.contains("box")) {
+        target = target.parentNode;
+      }
+      if (target.childNodes.length > 0) {
+        target.removeChild(target.childNodes[0])  
+      }
+      cln = document.getElementById(data).cloneNode(true);
+      cln.removeClassName('moving');
+
+      logPractice("mouseDrag", "drop", currentQnsId, dragSrcEl_.textContent, 
+        ~~(target.id[target.id.length-1] == data[data.length-1]), getSQLTimeString(new Date()), 'null');
+      target.appendChild(cln);
+      //e.target.innerHTML = e.dataTransfer.getData('text/html');
+    }
+
+    return false;
+  };
+
+  handleDragEnd = function(e) {
+    // this/e.target is the source node.
+      dragTarEl_ && dragTarEl_.removeClassName('over');
+      e.target.removeClassName('moving');
+  };
 
 function drag(ev) {
     ev.dataTransfer.setData("text/html", ev.target.id);

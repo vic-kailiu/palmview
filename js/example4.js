@@ -6,9 +6,6 @@ document.getElementById("startbutton").addEventListener("click", function(){
 var mark=0;
 var correctwrong="";
 
-
-
-
 if(window.addEventListener) {
 			window.addEventListener('load', function() {
 			var canvas, context, canvaso, contexto;
@@ -2423,5 +2420,3 @@ timestamp.now = timestamp.time.join("");
 		}
 	
 });
-
-		

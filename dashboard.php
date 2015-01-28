@@ -3,7 +3,6 @@
 
    $sessionID = session_id();
    $userID = $_SESSION['id'];
-   $phaseID = 16;
 ?>
 <!DOCTYPE html>
 <html lang="en">

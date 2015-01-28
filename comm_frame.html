@@ -153,6 +153,7 @@
       <ul class="sidebar-menu" id="nav-accordion">
          <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
          <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
+
          <li class="mt">
             <a id="mn_dashboard">
                <i class="fa fa-dashboard"></i>
@@ -211,12 +212,95 @@
 <!--sidebar end -->
 
 <script type="application/javascript">
+    var phases = null
+    var currentPhaseIndex = -1;
+    var phases = null;
+
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            // walkaround for single quote parsing
+            phases = JSON.parse(JSON.parse(xmlhttp.responseText))
+            populateMenu();
+            currentPhaseIndex = 0;
+            //loadPage(currentPhaseIndex);
+        }
+    }
+    xmlhttp.open("GET","json_phase.php",true);
+    xmlhttp.send();
+
    $(document).ready(function () {
       // set menu functions
       $('#mn_dashboard').click(function () {
            loadDashboard();
       });
    });
+
+   function populateMenu() {
+      eleUl = document.getElementById("nav-accordion");
+      for (i = 0; i< phases.length; i++) {
+        eleLi = document.createElement("li");
+        eleA  = document.createElement("a");
+        eleI  = document.createElement("i");
+
+        switch (phases[i].contentType) {
+          case "PAGE":      eleI.className = "fa fa-dashboard";     break;
+          case "VIDEO":     eleI.className = "fa fa-youtube-play";  break;
+          case "PRACTICE":  eleI.className = "fa fa-pencil";        break;
+          case "QUIZ":      eleI.className = "fa fa-clipboard";     break; 
+          default:          eleI.className = "fa fa-pencil";
+        }
+        
+        eleSpan = document.createElement("span");
+        text = document.createTextNode(phases[i].title);
+
+        eleSpan.appendChild(text);
+        eleA.appendChild(eleI);
+        eleA.appendChild(eleSpan);
+        eleA.id = "mn_" + phases[i].label;
+
+        eleA.addEventListener('click', function(e) {
+          loadPageWithLabel(e.target.id.substring(3));
+        });
+
+        eleLi.appendChild(eleA);
+
+        if (i == 0)
+          eleLi.className = "mt";
+        else
+          eleLi.className = "sub-menu";
+
+        eleUl.appendChild(eleLi);
+      }
+   }
+
+   function loadPageWithLabel(label) {
+      for (i = 0; i< phases.length; i++) {
+        if (label == phases[i].label) {
+          currentPhaseIndex = i;
+          loadPage(currentPhaseIndex);
+          return;
+        }
+      }
+   }
+
+   function loadPage(index) {
+      if (index >= phases.length) currentPhaseIndex = 0;
+
+      switch (phases[index].contentType) {
+        case "PAGE":      loadDashboard();  break;
+        case "VIDEO":     loadVideo();      break;
+        case "PRACTICE":  loadPractice();   break;
+        case "QUIZ":      loadQuiz();       break; 
+        default:          loadDashboard();
+      }
+   }
 
    function loadDashboard() {
       $(".wrapper").load("dashboard.html", function() {
@@ -253,5 +337,9 @@
        var nav = $("#" + id).data("navigation");
        var to = $("#" + id).data("to");
        console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
+   }
+
+   function loadVideo() {
+
    }
 </script>

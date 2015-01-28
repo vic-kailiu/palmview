@@ -22,11 +22,11 @@
       <section id="main-content">
         <section class="wrapper site-min-height">
           <h3><i class="fa fa-angle-right"></i> Practice Questions</h3>
-          <div style="position: relative;">
+<!--           <div style="position: relative;">
             <div style="position: absolute; top: 0; right: 10px;" >
               <a href="DIPlock_screen.php" class="btn btn-warning">Pause whatever I am doing</a>
             </div>
-          </div>
+          </div> -->
           <br><br>
           <div class="row mt">
             <div class="col-lg-12">

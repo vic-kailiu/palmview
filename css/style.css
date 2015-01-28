@@ -27,6 +27,11 @@ a, a:hover, a:focus {
     text-decoration: none;
     outline: none;
 }
+
+a:hover {
+    cursor: pointer;
+}
+
 ::selection {
 
     background: #1BA39C;
@@ -831,7 +836,7 @@ ul.top-menu > li > a:hover, ul.top-menu > li > a:focus {
 /* LINE ICONS CONFIGURATION */
 
 .mtbox {
-	margin-top: 80px;
+	margin-top: 40px;
 	margin-bottom: 40px;
 }
 

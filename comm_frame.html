@@ -10,18 +10,21 @@
    <div class="nav notify-row" id="top_menu">
       <!--  notification start -->
       <ul class="nav top-menu">
-         <!-- settings start -->
          <li class="dropdown">
+            <a href="../courses.php"><i class="fa fa-briefcase"></i></a>
+         </li>
+         <!-- settings start -->
+<!--          <li class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
             <i class="fa fa-tasks"></i>
-<!--                      <span class="badge bg-theme">4</span>-->
+                      <span class="badge bg-theme">4</span>
              </a>
             <ul class="dropdown-menu extended tasks-bar">
                <div class="notify-arrow notify-arrow-green"></div>
                <li>
                   <p class="green">You have no pending tasks</p>
                </li>
-               <!-- <li>
+               <li>
                   <a href="teaching.php#">
                      <div class="task-info">
                         <div class="desc">Video Guide</div>
@@ -75,22 +78,22 @@
                </li>
                <li class="external">
                   <a href="todo_list.php#">See All Tasks</a>
-               </li> -->
+               </li>
             </ul>
-         </li>
+         </li> -->
          <!-- settings end -->
          <!-- inbox dropdown start-->
-         <li id="header_inbox_bar" class="dropdown">
+<!--          <li id="header_inbox_bar" class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="dashboard.php#">
             <i class="fa fa-envelope-o"></i>
-            <!-- <span class="badge bg-theme">3</span> -->
+            <span class="badge bg-theme">3</span>
             </a>
             <ul class="dropdown-menu extended inbox">
                <div class="notify-arrow notify-arrow-green"></div>
                <li>
                   <p class="green">You have no new messages</p>
                </li>
-               <!-- <li>
+               <li>
                   <a href="dashboard.php#">
                   <span class="photo"><img alt="avatar" src="img/friends/fr-02.jpg"></span>
                   <span class="subject">
@@ -128,9 +131,9 @@
                </li>
                <li>
                   <a href="dashboard.php#">See all messages</a>
-               </li> -->
+               </li>
             </ul>
-         </li>
+         </li> -->
          <!-- inbox dropdown end -->
       </ul>
       <!--  notification end -->
@@ -151,12 +154,12 @@
          <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
          <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
          <li class="mt">
-            <a id="mn_dashboard" href="dashboard.php">
+            <a id="mn_dashboard">
                <i class="fa fa-dashboard"></i>
                <span>Dashboard</span>
             </a>
          </li>
-         <li class="sub-menu">
+<!--          <li class="sub-menu">
             <a id="mn_guide" href="javascript:;" >
                <i class="fa fa-book"></i>
                <span>My Student Guide</span>
@@ -165,7 +168,7 @@
                <li><a id="mn_calendar" href="calendar.php">Calendar</a></li>
                <li><a id="mn_todo" href="todo_list.php">Todo List</a></li>
             </ul>
-         </li>
+         </li> -->
          <li class="sub-menu">
             <a id="mn_teaching" href="teaching.php">
                <i class="fa fa-pencil"></i>
@@ -205,4 +208,50 @@
       <!-- sidebar menu end-->
    </div>
 </aside>
-<!--sidebar end-->
+<!--sidebar end -->
+
+<script type="application/javascript">
+   $(document).ready(function () {
+      // set menu functions
+      $('#mn_dashboard').click(function () {
+           loadDashboard();
+      });
+   });
+
+   function loadDashboard() {
+      $(".wrapper").load("dashboard.html", function() {
+        //document.getElementById("main-content").innerHTML='<object type="text/html" data="dashboard.html" ></object>';
+       $('#mn_dashboard').addClass('active');
+
+       $("#date-popover").popover({html: true, trigger: "manual"});
+       $("#date-popover").hide();
+       $("#date-popover").click(function (e) {
+           $(this).hide();
+       });
+   
+       $("#my-calendar").zabuto_calendar({
+           action: function () {
+               return myDateFunction(this.id, false);
+           },
+           action_nav: function () {
+               return myNavFunction(this.id);
+           },
+           // ajax: {
+           //     url: "show_data.php?action=1",
+           //     modal: true
+           // },
+           legend: [
+               {type: "text", label: "Special event", badge: "00"},
+               {type: "block", label: "Regular event", }
+           ]
+       });
+      });
+   }
+
+   function myNavFunction(id) {
+       $("#date-popover").hide();
+       var nav = $("#" + id).data("navigation");
+       var to = $("#" + id).data("to");
+       console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
+   }
+</script>

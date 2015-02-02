@@ -153,68 +153,40 @@
       <ul class="sidebar-menu" id="nav-accordion">
          <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
          <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
-
-         <li class="mt">
-            <a id="mn_dashboard">
-               <i class="fa fa-dashboard"></i>
-               <span>Dashboard</span>
-            </a>
-         </li>
-<!--          <li class="sub-menu">
-            <a id="mn_guide" href="javascript:;" >
-               <i class="fa fa-book"></i>
-               <span>My Student Guide</span>
-            </a>
-            <ul class="sub" id="mn_folder_guide">
-               <li><a id="mn_calendar" href="calendar.php">Calendar</a></li>
-               <li><a id="mn_todo" href="todo_list.php">Todo List</a></li>
-            </ul>
-         </li> -->
-         <li class="sub-menu">
-            <a id="mn_teaching" href="teaching.php">
-               <i class="fa fa-pencil"></i>
-               <span>Model Drawing - Tutorial</span>
-            </a>
-         </li>
-         <li class="sub-menu">
-            <a id="mn_practice" href="practice.php">
-               <i class="fa fa-pencil"></i>
-               <span>Model Drawing - Practice</span>
-            </a>
-         </li>
-         <li class="sub-menu">
-            <a id="mn_practice_mcq" href="practice_mcq.php">
-               <i class="fa fa-pencil"></i>
-               <span>Model Drawing - Practice II</span>
-            </a>
-         </li>
-         <li class="sub-menu">
-            <a id="mn_quiz" href="quiz.php">
-               <i class="fa fa-pencil"></i>
-               <span>Model Drawing - Quiz</span>
-            </a>
-         </li>
-         <!-- <li class="sub-menu">
-            <a href="javascript:;" >
-            <i class="fa fa-pencil"></i>
-            <span>Model Drawing</span>
-            </a>
-            <ul class="sub">
-               <li><a  href="teaching.php">Video Guide</a></li>
-               <li><a  href="practice.php">Practice Questions</a></li>
-               <li><a  href="quiz.php">Quiz Questions</a></li>
-            </ul>
-         </li> -->
       </ul>
       <!-- sidebar menu end-->
    </div>
 </aside>
 <!--sidebar end -->
-
+<script src="js/page_home.js"></script>
+<script src="js/page_video.js"></script>
+<script src="js/page_practice.js"></script>
 <script type="application/javascript">
+  //Loads the correct sidebar on window load,
+  //collapses the sidebar on window resize.
+  // Sets the min-height of #page-wrapper to window size
+  $(window).bind("load resize", function() {
+    topOffset = 50;
+    width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
+    if (width < 768) {
+      $('div.nav-collapse').addClass('collapse')
+      topOffset = 100; // 2-row-menu
+    } else {
+      $('div.nav-collapse').removeClass('collapse')
+    }
+    height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
+    height = height - topOffset;
+    if (height < 1) height = 1;
+    if (height > topOffset) {
+      $("#page-wrapper").css("min-height", (height) + "px");
+    }
+  });
+
     var phases = null
     var currentPhaseIndex = -1;
     var phases = null;
+    $body = $("body");
+    $body.addClass("loading");
 
     if (window.XMLHttpRequest) {
         // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -229,18 +201,11 @@
             phases = JSON.parse(JSON.parse(xmlhttp.responseText))
             populateMenu();
             currentPhaseIndex = 0;
-            //loadPage(currentPhaseIndex);
+            loadPage(currentPhaseIndex);
         }
     }
     xmlhttp.open("GET","json_phase.php",true);
     xmlhttp.send();
-
-   $(document).ready(function () {
-      // set menu functions
-      $('#mn_dashboard').click(function () {
-           loadDashboard();
-      });
-   });
 
    function populateMenu() {
       eleUl = document.getElementById("nav-accordion");
@@ -278,20 +243,29 @@
 
         eleUl.appendChild(eleLi);
       }
+
+      decorateMenu();
    }
 
    function loadPageWithLabel(label) {
       for (i = 0; i< phases.length; i++) {
         if (label == phases[i].label) {
-          currentPhaseIndex = i;
-          loadPage(currentPhaseIndex);
+          if (currentPhaseIndex != i) {   // only need to load when its in different phase
+            currentPhaseIndex = i;
+            loadPage(currentPhaseIndex);
+          }
           return;
         }
       }
+      loadPage(-1);
    }
 
    function loadPage(index) {
-      if (index >= phases.length) currentPhaseIndex = 0;
+      if (!$body.hasClass("loading")) $body.addClass("loading");
+
+      if (index >= phases.length || index < 0) currentPhaseIndex = index = 0;
+
+      // removeMainContent();
 
       switch (phases[index].contentType) {
         case "PAGE":      loadDashboard();  break;
@@ -302,44 +276,87 @@
       }
    }
 
-   function loadDashboard() {
-      $(".wrapper").load("dashboard.html", function() {
-        //document.getElementById("main-content").innerHTML='<object type="text/html" data="dashboard.html" ></object>';
-       $('#mn_dashboard').addClass('active');
+  function decorateMenu() {
+    $('#nav-accordion').dcAccordion({
+        eventType: 'click',
+        autoClose: true,
+        saveState: true,
+        disableLink: true,
+        speed: 'slow',
+        showCount: false,
+        autoExpand: true,
+        //        cookie: 'dcjq-accordion-1',
+        classExpand: 'dcjq-current-parent'
+    });
 
-       $("#date-popover").popover({html: true, trigger: "manual"});
-       $("#date-popover").hide();
-       $("#date-popover").click(function (e) {
-           $(this).hide();
-       });
-   
-       $("#my-calendar").zabuto_calendar({
-           action: function () {
-               return myDateFunction(this.id, false);
-           },
-           action_nav: function () {
-               return myNavFunction(this.id);
-           },
-           // ajax: {
-           //     url: "show_data.php?action=1",
-           //     modal: true
-           // },
-           legend: [
-               {type: "text", label: "Special event", badge: "00"},
-               {type: "block", label: "Regular event", }
-           ]
-       });
-      });
+    //    sidebar dropdown menu auto scrolling
+    jQuery('#sidebar .sub-menu > a').click(function() {
+        var o = ($(this).offset());
+        diff = 250 - o.top;
+        if (diff > 0)
+            $("#sidebar").scrollTo("-=" + Math.abs(diff), 500);
+        else
+            $("#sidebar").scrollTo("+=" + Math.abs(diff), 500);
+    });
+
+    //    sidebar toggle
+    $(function() {
+        function responsiveView() {
+            var wSize = $(window).width();
+            if (wSize <= 768) {
+                $('#container').addClass('sidebar-close');
+                $('#sidebar > ul').hide();
+            }
+
+            if (wSize > 768) {
+                $('#container').removeClass('sidebar-close');
+                $('#sidebar > ul').show();
+            }
+        }
+        $(window).on('load', responsiveView);
+        $(window).on('resize', responsiveView);
+    });
+
+    $('.fa-bars').click(function() {
+        if ($('#sidebar > ul').is(":visible") === true) {
+            $('#main-content').css({
+                'margin-left': '0px'
+            });
+            $('#sidebar').css({
+                'margin-left': '-210px'
+            });
+            $('#sidebar > ul').hide();
+            $("#container").addClass("sidebar-closed");
+        } else {
+            $('#main-content').css({
+                'margin-left': '210px'
+            });
+            $('#sidebar > ul').show();
+            $('#sidebar').css({
+                'margin-left': '0'
+            });
+            $("#container").removeClass("sidebar-closed");
+        }
+    });
+
+    // custom scrollbar
+    $("#sidebar").niceScroll({
+        styler: "fb",
+        cursorcolor: "#4ECDC4",
+        cursorwidth: '3',
+        cursorborderradius: '10px',
+        background: '#404040',
+        spacebarenabled: false,
+        cursorborder: ''
+    });
    }
 
-   function myNavFunction(id) {
-       $("#date-popover").hide();
-       var nav = $("#" + id).data("navigation");
-       var to = $("#" + id).data("to");
-       console.log('nav ' + nav + ' to: ' + to.month + '/' + to.year);
-   }
+  function removeMainContent() {
+    wrapper = document.getElementsByClassName("wrapper")[0];
+    if (! wrapper.hasChildNodes()) return;
 
-   function loadVideo() {
-
-   }
+    while (wrapper.firstChild) {
+        wrapper.removeChild(wrapper.firstChild);
+    }
+  }
 </script>

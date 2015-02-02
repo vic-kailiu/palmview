@@ -9,7 +9,7 @@
    <head>
       <title>SEEP; Palm View Pri Online Portal</title>
       <?php include('comm_header.html'); ?>
-      <?php include('comm_js.html'); ?>
+      <?php include('dialog.html'); ?>
    </head>
    <body onload="logStartActivity()" onunload="logEndActivity()">
       <section id="container" >
@@ -17,7 +17,7 @@
          <!-- MAIN CONTENT -->
          <!--main content start-->
          <section id="main-content">
-            <section class="wrapper"/>
+            <section class="wrapper site-min-height"/>
          </section>
          <!--main content end-->
          <!--footer start-->
@@ -29,12 +29,12 @@
                </a>
             </div>
          </footer>
+         <!-- Loading Modal, Place at bottom of page -->
+         <div class="modal">
+           <div class="item" />
+         </div>
          <!--footer end-->
       </section>
-      <script type="application/javascript">
-         $(document).ready(function () {
-            loadDashboard();
-         });
-      </script>
+      <script src="js/common-scripts.js"></script>
    </body>
 </html>

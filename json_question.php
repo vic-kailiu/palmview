@@ -3,8 +3,7 @@ $type = $_GET['type'];
 include('conn.php');
 
 try{
-	$pstmt = $dbConn->prepare(
-	'SELECT qID, qnsType, qns, ans from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY  `QUESTIONDB`.`qID` ASC ');
+	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY RAND( ) LIMIT 10');
 	$pstmt->execute(array($type));
 	$pstmt->bindColumn(1,$id);
 	$pstmt->bindColumn(2,$qtype);
@@ -20,36 +19,20 @@ catch (Exception $e)
 	die("[$fileName][$lineNumber] Database error: " . $e->getMessage() . '<br />');
 }
 
-// generate ramdom number within range
-$numbers = range(0, $rc-1);
-shuffle($numbers);
-$seeds = array_slice($numbers, 0, 5);
-sort($seeds);
-$arrlength = count($seeds);
-
 $outp = "[";
 
-$index = 0;
 for($k=0;$k<$rc;$k++){
 	$pstmt->fetch(PDO::FETCH_ASSOC);
 
-	if ($k == $seeds[$index]) {
-		if ($index!=0)
-			$outp .=',';
+	if ($k!=0) $outp .=',';
 
-		$outp .= "{";
-		$outp .= '"id":"'	.$id.	'", ';
-		$outp .= '"type":"'.$qtype.	'", ';
-		$outp .= '"qns":"'	.$qns.	'", ';
-		$outp .= '"ans":"'	.$ans.	'"';
-		$outp .="}";
+	$outp .= "{";
+	$outp .= '"id":"'	.$id.	'", ';
+	$outp .= '"type":"'.$qtype.	'", ';
+	$outp .= '"qns":"'	.$qns.	'", ';
+	$outp .= '"ans":"'	.$ans.	'"';
+	$outp .="}";
 
-		$index++;
-	}
-
-	if ($index >= $arrlength) {
-		break;
-	}
 }
 
 $outp .="]";

@@ -83,9 +83,9 @@
          <!-- /col-md-4 -->
       </div>
       <!-- /row --> 
-      <!-- <div class="row mt"> -->
+      <div class="row mt">
          <!--CUSTOM CHART START -->
- <!--         <div class="border-head">
+         <div class="border-head">
             <h3>MY RESULTS</h3>
          </div>
          <div class="custom-bar-chart">
@@ -125,9 +125,9 @@
                <div class="title">Assignment 2</div>
                <div class="value tooltips" data-original-title="75" data-toggle="tooltip" data-placement="top">75%</div>
             </div>
-         </div> -->
+         </div>
          <!--custom chart end-->
-      <!-- </div> -->
+      </div>
       <!-- /row --> 
    </div>
    <!-- /col-lg-9 END SECTION MIDDLE -->
@@ -186,6 +186,17 @@
 <!--/row -->
 
 <!--script for this page-->
-<!-- <script src="js/chart-master/Chart.js"></script> -->
+<script src="js/chart-master/Chart.js"></script>
 <script src="js/sparkline-chart.js"></script>    
-<script src="js/zabuto_calendar.js"></script>   
+<script src="js/zabuto_calendar.js"></script>
+<script type="application/javascript">
+ // custom bar chart
+$(".custom-bar-chart") && $(".bar").each(
+   function() {
+         var i = $(this).find(".value").html();
+         $(this).find(".value").html("");
+         $(this).find(".value").animate({
+             height: i
+         }, 2000)
+     });
+</script>

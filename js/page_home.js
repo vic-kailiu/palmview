@@ -1,5 +1,5 @@
 function loadDashboard() {
-  $(".wrapper").load("dashboard.html", function() {
+  $(".wrapper").load("home.html", function() {
     //document.getElementById("main-content").innerHTML='<object type="text/html" data="dashboard.html" ></object>';
    $('#mn_dashboard').addClass('active');
 

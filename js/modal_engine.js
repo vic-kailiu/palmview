@@ -5,6 +5,6 @@ function populateModal(type, lables, values, droppable, level) {
 	// values: top line -> botton line
 	// droppable, set the modal to be droppable or not
 	// level: 0 show everything, 1 don't show values, 2, don't show labels
-
+	
 
 }

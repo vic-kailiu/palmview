@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-lg-12">
-    <button type="button" class="btn btn-success" onclick="generateQuestion()">Generate Question</button>
+    <button type="button" class="btn btn-success" onclick="loadPracticeQns()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>
       <option value="_A%">Addition (+)</option>
@@ -11,7 +11,7 @@
   </div>
 </div>
 <!-- For Question Text and Keywords -->
-<div class="row">
+<div class="row" style="font-size: 14px;">
   <!-- Question Text-->
   <div class="col-sm-5">
     <h4 id="questionId">Question:</h4>
@@ -20,13 +20,13 @@
 </div>
 <!-- /.row -->
 <!-- For Question -->
-<div class="row">
+<div class="row" style="font-size: 14px;">
   <!-- Question-->
   <div class="col-sm-5" id="modal">
   </div>
   <!-- Drag Source -->
-  <div class="col-sm-5" id="drag_source">
+  <div class="col-sm-2" id="drag_source" style="margin-top: 32px">
   </div>
 </div>
 <!-- /.row -->
-<div id="answer"></div>
+<div id="answer" style="font-size: 14px;"></div>

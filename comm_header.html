@@ -51,39 +51,66 @@ if (visProp) {
   document.addEventListener(evtname, visChange);
 }
 
-var inactiveTime;
-
 function visChange() {
   if (isHidden()){
-    inactiveTime = new Date();
-    // log.push([<?php echo $userID;?>,<?php echo $phaseID;?>,getSQLTimeString(new Date()),'inactive','null','null','null','null','null','<?php echo $sessionID;?>']);
+    logAction('pageActivity', 'leave_page', 'null', 'null', 'null', -1, 'pageActivity');
   }
   else{
-    var cur = new Date();
-    var duration = 60*60*1000*(cur.getHours()-inactiveTime.getHours())+60*1000*(cur.getMinutes()-inactiveTime.getMinutes())+1000*(cur.getSeconds()-inactiveTime.getSeconds())+(cur.getMilliseconds()-inactiveTime.getMilliseconds());
-    log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'pageActivity','null','alt_page',duration,'null','null','<?php echo $sessionID;?>']);
+    logAction('pageActivity', 'alt_page', 'null', 'null', 'null', 1, 'pageActivity');
   }
 }
 
-// log manager
-var startTime;
-
 function logStartActivity(){
-  startTime  = new Date();
-  log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(startTime),'start','null','null','null','null','null','<?php echo $sessionID;?>']);
+  logAction('start', 'null', 'null', 'null', 'null', -1, 'page');
 }
 
 function logEndActivity(){
-  var cur = new Date();
-  var duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
-  log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'stop','null','null',duration,'null','null','<?php echo $sessionID;?>']);
+  logAction('stop', 'null', 'null', 'null', 'null', 1, 'page');
           
   logIntoServer(log);
   log = [];
 }
 
-function logAction(actType, act, tar1, tar2, correct, time, duration) {
-  log && log.push([<?php echo $userID;?>, (phases && currentPhaseIndex >=0)? phases[currentPhaseIndex].id : -1 , time, actType, correct,act, duration, tar1, tar2,'<?php echo $sessionID;?>']);
+durationDictionary = [];
+
+function logAction(actType, act, tar1, tar2, correct, durationCode, durationKey) {
+  // manages ths timesamps that need the duration
+  // durationCode: 0 no action, -1 end duration, 1 start duration
+  // durationKey helps to refer to the key
+  var cur = new Date();
+  var duration;
+
+  if (durationCode == -1) {       //push key
+    var item = {};
+    item['key'] = durationKey;
+    item['timestamp'] = cur;
+    durationDictionary.push(item);
+  } else if (durationCode == 1){  // pop key
+    var i = 0;
+    while ( i<durationDictionary.length && durationDictionary[i].key != durationKey) i++;
+    if (durationDictionary[i].key == durationKey) {
+      var item = durationDictionary.pop(durationDictionary[i]);
+      var startTime = item.timestamp;
+      duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
+    }
+  }
+
+  // `studentID`,`phaseID`,`time`,`actionType`,`correct`,`action`,`duration`,`target1`,`target2`,`sessionID`
+  log && log.push([ <?php echo $userID;?>, 
+                    (phases && currentPhaseIndex >=0)? parseInt(phases[currentPhaseIndex].id)+15 : -1 , 
+                    getSQLTimeString(cur),
+                    actType,
+                    correct,
+                    act, 
+                    duration? duration:'null',
+                    tar1,
+                    tar2,
+                    '<?php echo $sessionID;?>']);
+
+  if (log.length > 20) {
+    logIntoServer(log);
+    log = [];
+  }
 }
 
 </script>

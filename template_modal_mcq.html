@@ -1,0 +1,205 @@
+<script type="text/javascript">
+  var qnss = null;
+  var _selectType = null;
+  var qnssIndex = 1000;
+
+  function loadModalMCQ() {
+    var selectType = document.getElementById('selectType').value;
+
+    if (qnss == null || _selectType != selectType) {
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                qnss = JSON.parse(xmlhttp.responseText);
+                // { id, type, text, ans, labels, values, opt1, opt2 }
+                qnssIndex = 0;
+                generateModalMCQ(qnss[qnssIndex]);
+            }
+        }
+        xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
+        xmlhttp.send();
+    } else {
+        qnssIndex += 1;
+        if (qnssIndex < qnss.length) {
+            generateModalMCQ(qnss[qnssIndex]);
+        } else {
+            qnss = null;
+            loadModalMCQ();
+        }
+    }
+
+    _selectType = selectType;
+  }
+
+  function generateModalMCQ(qns) {
+    // clear content
+    var textDiv = document.getElementById('text');
+    if (!textDiv) {
+        alert("cannot get text div!");
+        return;
+    }
+    textDiv.innerHTML = "";
+
+    var questionDiv = document.getElementById('options');
+    if (!questionDiv) {
+        alert("cannot get options div!");
+        return;
+    }
+    questionDiv.innerHTML = ""; //reset content
+
+    // text section
+    var regex = /([\.,-\/#!?\^&\*;:{}=\-_`~()])/g; //regular expression for punctuations
+    var punctuations = "\.,-\/#!?\^&\*;:{}=\-_`~()";
+    var s = qns.text.replace(/(^\s*)|(\s*$)/gi, "");
+    s = s.replace(/[ ]{2,}/gi, " ");
+    s = s.replace(/\n /, "\n");
+    s = s.replace(regex, ' $1'); //add space before punctuations for splitting
+    words = s.split(" ");
+    //write to html
+    var content = "<p>";
+    for (j = 0; j < words.length; j++) {
+        if (punctuations.indexOf(words[j][0]) > -1) { // is a punctuation
+            content += words[j];
+        } else {
+            if (j > 0) content += "&nbsp;";
+            content += "<button class='clickable'>" + words[j] + "</button>";
+        }
+    }
+    content += "</p>";
+    textDiv.innerHTML += content;
+
+    $('#text').on('click', '.clickable', highlight);
+
+    content = "";
+    var optionModals = qns.opt2.split("#");
+    shuffle(optionModals);
+
+    for (k = 0; k< optionModals.length; k++) {
+        optionModal = optionModals[k].split("@");
+        
+        var labelArr = parsePara(optionModal[2]);
+        var valueJSONArr = [];
+        var valueStringArr = optionModal[3].split('|');
+        valueJSONArr.push( parsePara(valueStringArr[0]) );
+        valueJSONArr.push( parsePara(valueStringArr[1]) );
+
+        content += '<ol style="padding: 0;"><input type="radio" name="q'+ qns.id +'" onclick="checkMCQ(event)" value="'+optionModal[0]+'"style="float: left;">';
+        content += '<div style="float: left;width: 90%;">';
+        content += populateModal(optionModal[1], labelArr, valueJSONArr, false, 0);
+        content += '</div></ol>';
+    }
+    questionDiv.innerHTML = content;
+
+    logAction('mouseClick', 'qnsStart', qnss[qnssIndex].id, 'null', 'null', -1, 'modal_'+qnss[qnssIndex].id);
+  }
+
+  var ans = false;
+
+  function checkMCQ(e) {
+    ans = e.target.value == 'true';
+    logAction('mouseClick', 'mcq_select', qnss[qnssIndex].id, 'null', ~~ans, 0, 'null');
+  }
+
+  function checkanswer() {
+    if ( ans ) {
+      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, 1, 'modal_'+qnss[qnssIndex].id);
+      $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
+        resizable: false,
+        height:180,
+        modal: true,
+        buttons: {
+          "Next Question": function() {
+            loadModalMCQ();
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+    } else {
+       logAction("submission", 'null', qnss[qnssIndex].id, 'null', 0, 1, 'modal_'+qnss[qnssIndex].id);
+       $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
+        resizable: false,
+        modal: true,
+        buttons: {
+          "Try Again": function() {
+            logAction("end", 'review', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
+              $( this ).dialog( "close" );
+          },
+          // "Make it easier": function() {
+          //     if (question_difficulty > 0) question_difficulty -= 1;
+          //     generateQns(qnss[qnssIndex]);
+          //     $( this ).dialog( "close" );
+          // },
+          "Next Question": function() {
+            logAction("end", 'ignore_error', qnss[qnssIndex].id, 'null', 0, 0, 'null');
+              loadModalMCQ();
+              $( this ).dialog( "close" );
+          }
+        }
+      });
+    }
+  }
+
+  function shuffle(array) {
+    var counter = array.length, temp, index;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+  }
+</script>
+<style>
+ol {
+  display: inline-flex;
+  width: 50%;
+  padding-left: 5px;
+}
+</style>
+<div class="row">
+  <div class="col-lg-12">
+    <button type="button" class="btn btn-success" onclick="loadModalMCQ()">Generate Question</button>
+    <select id="selectType" class="btn btn-theme dropdown-toggle">
+      <option value="%">Random (+,-,x,/)</option>
+      <option value="_A%">Addition (+)</option>
+      <option value="_S%">Subtraction (-)</option>
+      <option value="_M%">Multiplication (x)</option>
+      <option value="_D%">Division (/)</option>
+    </select>
+  </div>
+</div>
+<!-- For Question Text and Keywords -->
+<div class="row" style="font-size: 14px;">
+  <!-- Question Text-->
+  <div class="col-sm-7">
+    <h4 id="questionId">Question:</h4>
+    <div id="text"></div>
+  </div>
+</div>
+<!-- /.row -->
+<!-- For Question -->
+<div class="row" style="font-size: 14px;">
+  <!-- Question-->
+  <div class="col-sm-7" id="options"></div>
+</div>
+<!-- /.row -->
+<div id="answer" style="font-size: 14px;"><button type="button" class="btn btn-success" onclick="checkanswer()">Check Answer</button></div>

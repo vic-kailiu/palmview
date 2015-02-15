@@ -1,0 +1,143 @@
+John have 5 apples. His father gave him 3 more. How many apples does he have altogether?
+Tom have 3 pencils. Mary have 6 pencils. How many pencils are there altogether?
+Kenneth got 2 balls. His friend gave him another 2. How many balls does he have altogether?
+Peter have 6 pineapples. His mother gave him 2 more. How many pineapples does he have altogether?
+Eric have 4 pies. His brother gave him 3 more. How many pies does he have altogether?
+Adam have 7 watermelons. His sister gave him 1 more. How many watermelons does he have altogether?
+A baker made 250 red bean buns and 150 lotus seed buns. How many buns did he make altogether?
+May saved $85 last year. She saved $176 this year. How much money did she save altogether?
+Alex has $24 at first. His grandparents give him $6 during the Chinese New Year. How much money does Alex have now?
+Green group had 66 points. Today the group scored another 15 points. How many points does Green group have now?
+Mick spent $6 on his lunch. Then he bought a book that cost $12. How much money did Mick spend in all?
+At first, Mr Rafi had 38 primary 4 pupils in his Junior rugby club. Last week, 29 Primary 3 pupils jointed the club. How many pupils does have in his club now?
+There were 13 boys and 16 girls in a classroom. How many pupils were there in the classroom?
+Mrs Amanda had 17 pupils jointed her art club at first. Later, 12 pupils jointed her art club. How many pupils were there in her art club in the end?
+
+'got', 'friends', 2, 2
+'have', 'from mother', 6, 2
+'have', 'from brother', 4, 3
+'red bean buns', 'lotus seed buns', 250, 150
+'last year', 'this year', 85, 176
+'at first', 'grandparents', 24, 6
+'Tom', 'Mary', 3, 6
+'have', 'from sister', 7, 1
+'had', 'scored', 66, 15
+'lunch', 'book', 6, 12
+'primary 4', 'primary 3', 38, 29
+'boys', 'girls', 13, 16
+'at first', 'later', 17, 12
+
+Shop A sold 212 toy cars. Shop B sold 88 more toy cars than Shop A. How many toy cars did Shop B sell?
+'Shop A', 'Shop B', 212, 88
+
+Jimmy has $24 at first. His grandparents give him $6 during the Chinese New Year. His uncle also gives him another $8. How much money does Alex have now?
+'at first', 'grandparents', 'uncle', 24, 6, 8
+
+
+Jane have 7 pies altogether. She ate 2 pies for lunch. How many pies does she have left?
+Ahmad has 290 marbles. He loses 231 marbles to his friends. How many marbles does he have left?
+Philip had $980. He bought a television that cost $814. How much money did he have left?
+There are 240 children in a hall. 18 of theme are not reading a book. How many children are reading a book?
+Mr Lei had 270 fruit tarts. He sold some of the fruit tarts and had 45 fruit tarts left. How many fruit tarts did he sell?
+There are 195 children at a museum. 85 of them are girls. How many boys are there?
+There are 34 guppies in a fish tank. 5 of them die. How many guppies are alive?
+Mrs Toh had $200. She bought a dress for $189. She spent the rest of the money on her lunch. How much did her lunch cost?
+Mr Farouq spent $185 on a pair of roller skates. He had $210 at first. How much money did he have left?
+There were 31 days in January. 5 of there days were rainy days. How many days in January were not rainy days?
+There were 23 dogs in a pet shop. Then 8 dogs were sold. How many dogs were there in the end?
+There are  28 pupils in a class. 19 of them are girls. How many boys are there?
+Mr Lim needed $900 to pay for his medical fees. He earned $360 last week. How much more money does he need to earn to pay the fees?
+There are 25 fruits in a basket. 11 of them are apples and the rest are oranges. How many oranges are there?
+Yoha collected 402 stamps. 220 of them were local stamps and the rest were foreign stamps. How many foreign stamps did he have?
+Mrs Lim made 10 buns. she had 7 red bean buns and some meat buns. How many meat buns did she have?
+
+'ate', 'left', 7, 2, 0
+'loses', 'left', 290, 231, 0
+'television', 'left', 980, 814, 0
+'reading', 'not reading', 240, 18, 1
+'sold', 'left', 270, 45, 1
+'girls', 'boys', 195, 85, 0
+'alive', 'die', 34, 5, 1
+'dress', 'lunch', 200, 189, 0
+'roller skates', 'left', 210, 185, 0
+'rainy', 'not rainy', 31, 5, 0
+'sold', 'left', 23, 8, 0
+'girls', 'boys', 28, 19, 0
+'earned', 'need to earn', 900, 360, 0
+'apples', 'oranges', 25, 11, 0
+'local', 'foreign', 402, 220, 0
+'red bean', 'meat', 10, 7, 0
+
+Alan have 5 pens. He have 3 more pens than Deborah. How many pens does Deborah have?
+'Alan', 'Deborah', 5, 3
+
+Timmy have 2 plates of oranges. Each plate have 3 oranges. How many oranges are there altogether?
+There are 5 plates of food. Each plat has 3 pies. How many pies are there altogether?
+Pat saved $10 each day. She saved an equal amount of money for 6 days. How much money did she save in all?
+Mrs Tan gives some doughnuts to 7 children. Each cild gets 4 doughnuts. How many doughnuts does she gave out in all?
+A cake costs $2. How much does 3 cakes cost?
+There are 4 plates of apples on the table. Each plate has 4 apples. How many apples are there altogether?
+Jun Hao has 6 fish tanks at home. There are 4 fish in each tank. How many fish does he have altogether?
+There are 5 hamsters in a pet shop. Each hamster has 4 legs. How many leges are there altogether?
+Mrs. Hog grouped her class into 4 groups. There were 9 pupils in each group. How many pupils wre there in her class?
+There are 4 lions in a cage. Each of them has 4 legs. How many legs are there altogether?
+Jeremy gave some chocolates to his 6 friends. Each friend got 3 chocolates. How many chocolates did he give to his friends?
+Evelyn used all the beads in a box to make 8 nechlaces. She needed 10 beads to make a necklace. How many beads did she have in the box before she started?
+1 tricycle has 3 wheels. how many wheels are there in 4 tricycles?
+
+3, 2
+3, 5
+10, 6
+4, 7
+2, 3
+4, 4
+4, 6
+4, 5
+9, 4
+4, 4
+3, 6
+10, 8
+3, 4
+
+
+There are 10 stones altogether. David puts them equally into 5 boxes. How many stones are there in 1?
+Louis has 2 boxes of biscuits. There are 12 biscuits altogether in the 2 boxes. How many biscuits are there in each box?
+Judy saves $10 in 5 days. She saves an equal amount of money every day. How much does she save each day?
+The cost of 4 pens is $8. How much does each pen cost?
+2 pens costs $8. How much does each pen cost?
+There are 18 pupils in a class. They are grouped into 3 groups. How many pupils are there in each group?
+A baker has 15 buns. He devides them equally into 5 trays. How many buns are there on each tray?
+Melvin gives 12 marbles equally to his 3 brothers. How many marbles does each of his brothers get?
+Patricia puts 24 cookies equally into 4 boxes. How many cookies are there in each box?
+Mr Alif sold the same number of computers on Tuesday, Wednesday, Thursday and Friday. He sold a total of 28 computers over the 4 days. How namy computers did he sell each day?
+Albret started reading a book from page 1. He read the same number of pages every day. After five days, he read 45 pages of the book. How many pages did he read rach day?
+Michelle started doing her assessment book from page 4. She did the same number of pages every day. At the end of the fourth day, she stopped after completing page 27. How many pages did she do each day?
+
+10, 5
+12, 2
+10, 5
+8, 4
+8, 2
+18, 3
+15, 5
+12, 3
+24, 4
+28, 4
+45, 5
+24, 4
+
+Joel bought 12 toys from the shop. He puts 2 toys in each bag. How many bags does he have?
+Sam saves $3 each day. How many days does he need to save to have $18?
+Sharon spent $24 to buy a few pens. Each pen cost $4. How many pens did she buy?
+Mr Tan packes 12 muffins into a few boxes. Each bos has 4 muffins. How many boxes does he use?
+Peter has 30 marbles. He puts them euqally into a few boxes. Each box has 5 marbles. How many boxes does he use?
+Joshua has 12 fruits. He wants to put 2 fruits on each plate. How many plates does he need?
+Serene has 28 sticks. She ties the sticks into bundles of 4. How many bungles are there?
+
+12, 2
+18, 3
+24, 4
+12, 4
+30, 5
+12, 2
+28, 4

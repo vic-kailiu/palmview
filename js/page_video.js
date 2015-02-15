@@ -26,7 +26,7 @@
       player && player.destroy;
       if (youtubeAPIReady) {
         createPlayer();
-        initialStartTime = -1;
+        initialStart = false;
         $body.removeClass("loading");
       } else {
         var tag = document.createElement('script');
@@ -56,13 +56,13 @@
   });
  }
 
-var initialStartTime = -1;
+var initialStart = false;
 var youtubeAPIReady = 0;
 
 function onYouTubeIframeAPIReady() {
   createPlayer();
 
-  initialStartTime = -1;
+  initialStart = false;
   youtubeAPIReady = 1;
   $body.removeClass("loading");
 }
@@ -79,19 +79,26 @@ function createPlayer() {
 function onPlayerStateChange(event) {
   switch(event.data) {
     case YT.PlayerState.PLAYING:
-      if (initialStartTime < 0)
-        initialStartTime = new Date();
-
-      // log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'mouseClick','null','video_start','null',event.target.B.videoData.video_id, event.target.getCurrentTime(),'<?php echo $sessionID;?>']);
+      if (!initialStart) {
+        initialStart = true;
+        logAction('mouseClick', 'video_start', 
+                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
+                  'null', -1, event.target.B.videoData.video_id);
+      } else {
+        logAction('mouseClick', 'video_start', 
+                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
+                  'null', 0, 'null');
+      }
       break;
     case YT.PlayerState.PAUSED:
-      // log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'mouseClick','null','video_pause','null',event.target.B.videoData.video_id, event.target.getCurrentTime(),'<?php echo $sessionID;?>']);
+      logAction('mouseClick', 'video_pause', 
+                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
+                  'null', -1, event.target.B.videoData.video_id);
       break;
     case YT.PlayerState.ENDED:
-      var cur = new Date();
-      var duration = 60*60*1000*(cur.getHours()-initialStartTime.getHours())+60*1000*(cur.getMinutes()-initialStartTime.getMinutes())+1000*(cur.getSeconds()-initialStartTime.getSeconds())+(cur.getMilliseconds()-initialStartTime.getMilliseconds());
-
-      // log.push([<?php echo $userID;?>,<?php echo $phaseID?>,getSQLTimeString(new Date()),'mouseClick','null','video_end',duration,event.target.B.videoData.video_id, 'null','<?php echo $sessionID;?>']);
+      logAction('mouseClick', 'video_end', 
+                  event.target.B.videoData.video_id, 'null',
+                  'null', 1, event.target.B.videoData.video_id);
 
       $('<div/>').html('Tutorial Complete, well done! Want to go to next one? ').dialog({
         resizable: false,
@@ -126,5 +133,5 @@ function onVideoSelectChange() {
   player.destroy();
   createPlayer();
 
-  initialStartTime = -1;
+  initialStart = false;
 }

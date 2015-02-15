@@ -3,8 +3,9 @@ $type = $_GET['type'];
 include('conn.php');
 
 try{
-	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qID` =326');
-//	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY RAND( ) LIMIT 10');
+	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qID` = 363');
+	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` ="MODAL_D1"');
+	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY RAND( ) LIMIT 10');
 	$pstmt->execute(array($type));
 	$pstmt->bindColumn(1,$id);
 	$pstmt->bindColumn(2,$qtype);
@@ -41,7 +42,6 @@ for($k=0;$k<$rc;$k++){
 	$outp .= '"opt1":"'		.$opt1.		'", ';
 	$outp .= '"opt2":"'		.$opt2.		'"';
 	$outp .="}";
-
 }
 
 $outp .="]";

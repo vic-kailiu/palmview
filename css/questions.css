@@ -17,7 +17,7 @@
 }
 
 .horizontal {
-	height: 50px;
+	/*height: 50px;*/
 	width: 100%
 }
 
@@ -44,9 +44,18 @@ border: 3px solid transparent;
 
 .box {
 	border: 3px solid grey;
-	height: 100%;
+	height: 50px;
 	margin-right:-3px;
 	display: inline-block;
+	overflow: hidden;
+}
+
+.filled {
+	background-color: #F5AFAF;
+}
+
+.dotted {
+	border: dashed;
 }
 
 .box_dotted{
@@ -63,33 +72,38 @@ border: 3px solid transparent;
 }
 
 .model0.moving,
-.model1.moving {
+.model1.moving,
+.model2.moving {
   -webkit-transform: scale(0.8);
   -moz-transform: scale(0.8);
   -ms-transform: scale(0.8);
   -o-transform: scale(0.8);
 }
 
-.model0 {
+.model0,
+.model1,
+.model2 {
 	color:white;
 	height: 100%;
-	width: 100%;
-	background-color: #F64747;
-        display: table;
+	width: 101%; /*fix addition white space*/
+    display: table;
 	overflow:hidden;
 	position: relative;
 	text-align: center;
+	word-break: break-word;
+}
+
+.model0 {
+	background-color: #F64747;
 }
 .model1 {
-	color:white;
-	height: 100%;
-	width: 101%;
 	background-color: #2574A9;
-        display: table;
-	overflow:hidden;
-	position: relative;
-	text-align: center;
 }
+
+.model2 {
+	background-color: green;
+}
+
 
 .boxno15 {
 	height: 50px;
@@ -101,7 +115,7 @@ border: 3px solid transparent;
 /*	margin-right: -3px;*/
 	display: inline-block;
 	position: relative;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .left_arrow, .line, .right_arrow {

@@ -11,13 +11,14 @@ function loadPractice() {
         eleDes.insertBefore(des, eleDes.childNodes[0]);
 
         switch (phases[currentPhaseIndex].para1) {
+            case 'MODAL_TUT':   $("#main_content").load("template_modal_tut.html",  function() {  loadModalTUT(); });   break;
             case 'MODAL_MCQ':   $("#main_content").load("template_modal_mcq.html",  function() {  loadModalMCQ(); });   break;
             case 'MODAL':       $("#main_content").load("template_modal.html",      function() {  loadModal(); });      break;
             case 'MCQ':         $("#main_content").load("template_mcq.html",        function() {  loadMCQ(); });        break;
             case 'QUIZ':        $("#main_content").load("template_quiz.html",       function() {  loadQuiz(); });       break;
         }
     });
-    $body.removeClass("loading");
+    //$body.removeClass("loading");
 }
 
 function populateModal(type, labels, values, droppable, level) {
@@ -25,18 +26,20 @@ function populateModal(type, labels, values, droppable, level) {
     // type: A1, A2, A3, S1, S2, M1, D1, D2
     // labels: %'labelText'&'scala number' %'labelText'&'scala number' %'labelText'&'scala number' ...
     // values: top line -> botton line
-    // droppable, set the modal to be droppable or not
+    // droppable, set the modal to be droppable or not, droppable == null is lite version
     // level: 0 show everything, 1 don't show values, 2, don't show labels
 
     var modalContent = "";
 
-    //line and boxes
-    //modalContent += "<div class='numberPlacing' id='drop_container'>";
-    modalContent += "<div class='numberPlacing'>";
-    for (i = 0; i < values[0].length; i++) {
-        modalContent += "<div class='strech' style='width:" + (100 * eval(values[0][i].scala) ) + "%' align='center'>" + (level > 1 ? "<input class='numInput' id = 'para_l0_" + i + "'>" : values[0][i].text) + "</div>";
+    if (droppable != null) {
+        //line and boxes
+        //modalContent += "<div class='numberPlacing' id='drop_container'>";
+        modalContent += "<div class='numberPlacing'>";
+        for (i = 0; i < values[0].length; i++) {
+            modalContent += "<div class='strech' style='width:" + (100 * eval(values[0][i].scala) ) + "%' align='center'>" + (level > 0 ? "<input class='numInput' id = 'para_l0_" + i + "'>" : values[0][i].text) + "</div>";
+        }
+        modalContent += "</div>"
     }
-    modalContent += "</div>"
 
     //Create arrow and line
     // modalContent += "<div class='horizontal_scala' id='drop_container'>";
@@ -66,11 +69,13 @@ function populateModal(type, labels, values, droppable, level) {
     }
     modalContent += "</div>"
 
-    modalContent += "<div class='numberPlacing'>";
-    for (i = 0; i < values[1].length; i++) {
-        modalContent += "<div class='strech' style='width:" + (100 * eval(values[1][i].scala) )+ "%' align='center'>" + (level > 1 ? "<input class='numInput' id = 'para_l1_" + i + "'>" : values[1][i].text) + "</div>";
+    if (droppable!=null) {
+        modalContent += "<div class='numberPlacing'>";
+        for (i = 0; i < values[1].length; i++) {
+            modalContent += "<div class='strech' style='width:" + (100 * eval(values[1][i].scala) )+ "%' align='center'>" + (level > 0 ? "<input class='numInput' id = 'para_l1_" + i + "'>" : values[1][i].text) + "</div>";
+        }
+        modalContent += "</div>"
     }
-    modalContent += "</div>"
 
     return modalContent;
 }
@@ -86,11 +91,11 @@ function generateAS1(labels, values, droppable, level) {
                     + (droppable? "ondrop='handleDrop(event)' ondragover='handleDragOver(event)' ondragenter='handleDragEnter(event)' ondragleave='handleDragLeave(event)' >"
                                     : ">" );
 
-        if (level == 0) {
+        if (level < 2) {
             content += "<div class='model" + i.toString() + "' id='model" + i.toString() + "' "
                     + (droppable? "draggable='true' ondragstart='handleDragStart(event)' ondragend='handleDragEnd(event)'>"
                                     : ">" );
-            content += labels[i].text + "</div>"
+            content += ( (droppable==null)? '': labels[i].text) + "</div>"
         }
 
         content += "</div>";
@@ -122,11 +127,11 @@ function generateAS2(labels, values, droppable, level) {
                     + (droppable? "ondrop='handleDrop(event)' ondragover='handleDragOver(event)' ondragenter='handleDragEnter(event)' ondragleave='handleDragLeave(event)' >"
                                 : ">");
 
-        if (level == 0) {
+        if (level < 2) {
             content += "<div class='model" + count + "' id='model" + count + "' "
                     + (droppable? "draggable='true' ondragstart='handleDragStart(event)' ondragend='handleDragEnd(event)'>"
                                 : ">");
-            content += labels[i].text + "</div>"
+            content += ( (droppable==null)? '': labels[i].text) + "</div>"
         }
 
         content += "</div>";
@@ -166,9 +171,24 @@ function generateMD2() {
 }
 
 function highlight(e) {
-    //var keywordDiv = document.getElementById('keywords');
-    $(this).css('background-color', 'yellow');
-    logAction("mouseClick", "highlight", qnss[qnssIndex].id, $(this).text(), 'null', 0, 'null');
+    var target;
+    if (e.classList.contains("clickable")) {
+        target = e;
+    } else if (this.classList.contains("clickable")) {
+        target = this;
+    } else {
+        return;
+    }
+
+    if (target.style.backgroundColor != '') {
+        target.style.backgroundColor = '';
+        logAction("mouseClick", "de-highlight", qnss[qnssIndex].id, $(target).text(), 'null', 0, 'null');
+    } else {
+        //var keywordDiv = document.getElementById('keywords');
+        $(target).css('background-color', 'yellow');
+        logAction("mouseClick", "highlight", qnss[qnssIndex].id, $(target).text(), 'null', 0, 'null');
+    }
+    
     /*if (!keywordDiv) {
         alert("cannot get keywords div!");
         return;

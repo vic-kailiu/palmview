@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    
+<head>
+	<title>Question List</title>
+	<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.css" rel="stylesheet">
+<!--external css-->
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/zabuto_calendar.css">
+<link rel="stylesheet" type="text/css" href="js/gritter/css/jquery.gritter.css" />
+<link rel="stylesheet" type="text/css" href="lineicons/style.css">
+<link href="css/buttons.css" type="text/css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="css/style.css" rel="stylesheet">
+<link href="css/style-responsive.css" rel="stylesheet">
+<link href="css/questions.css" rel="stylesheet">
+<link href="css/sb-admin-2.css" rel="stylesheet">
+<script src="js/jquery.js"></script>
+<script src="js/jquery-1.8.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/page_practice.js"></script>
+
+<script type="text/javascript">
+$(function(){
+
+	if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                qnss = JSON.parse(xmlhttp.responseText);
+                // { id, type, text, ans, labels, values, opt1, opt2 }
+                
+                var content = ''
+
+                for (var i = 0; i< qnss.length; i++) {
+                	content += "<div class='row'><div class='col-lg-8'>";
+                	content += "<b>[ ID: "+qnss[i].id+", Type: "+qnss[i].type+" ]</b> ";
+                	content += qnss[i].text;
+                	content += "</div></div>";
+
+                	// continue;
+
+                	content += "<div class='row'>";
+                	content += "<u class='col-sm-1'>Modal:</u>";
+                	content += "<div class='col-lg-6'>";
+                	var labelArr = parsePara(qnss[i].labels);
+			        var valueJSONArr = [];
+			        var valueStringArr = qnss[i].values.split('|');
+			        valueJSONArr.push( parsePara(valueStringArr[0]) );
+			        valueJSONArr.push( parsePara(valueStringArr[1]) );
+			        content += populateModal(qnss[i].type, labelArr, valueJSONArr, false, 0);
+                	content += "</div>";
+                	content += "</div>";
+
+                	content += "<div class='row'>";
+                	content += "<u class='col-sm-1'>Anser:</u>";
+                	content += "<div class='col-lg-6'>";
+			        content += qnss[i].ans;
+                	content += "</div>";
+                	content += "</div>";
+                	content += "</br>";
+                }
+
+
+                document.getElementById('content').innerHTML = content;
+            }
+        }
+        xmlhttp.open("GET", "json_question_all.php?type=MODAL%", true);
+        xmlhttp.send(); 
+ 
+});
+</script>
+<style>
+	b, u {
+		color: black;
+	}
+</style>
+
+</head>
+
+<body style="background: rgb(210, 210, 210);">
+  <div id='content' style="width: 80%;overflow-y: auto;margin: auto;padding: 30px;background: white;"></div>    
+</body>
+</html>

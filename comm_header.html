@@ -16,6 +16,7 @@
 <link href="css/style-responsive.css" rel="stylesheet">
 <link href="css/questions.css" rel="stylesheet">
 <link href="css/sb-admin-2.css" rel="stylesheet">
+<script src="js/JSON/json2.js"></script>
 <script src="js/jquery.js"></script>
 <script src="js/jquery-1.8.3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
@@ -28,6 +29,8 @@
 <script type="text/javascript" src="js/gritter-conf.js"></script> 
 <script src="js/log.js"></script>
 <script>
+// var currentPhaseIndex = -1;
+// var phases = null;
 var log = new Array();
 function getHiddenProp(){
     var prefixes = ['webkit','moz','ms','o'];
@@ -48,7 +51,11 @@ function isHidden() {
 var visProp = getHiddenProp();
 if (visProp) {
   var evtname = visProp.replace(/[H|h]idden/,'') + 'visibilitychange';
-  document.addEventListener(evtname, visChange);
+  if (document.addEventListener) {
+    document.addEventListener(evtname, visChange);
+  } else if (document.attachEvent) {
+    document.attachEvent(evtname, visChange);
+  }
 }
 
 function visChange() {
@@ -111,6 +118,22 @@ function logAction(actType, act, tar1, tar2, correct, durationCode, durationKey)
     logIntoServer(log);
     log = [];
   }
+}
+
+function logProgress(progress){
+  var xmlhttp;
+  if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp=new XMLHttpRequest();
+  }
+  else
+  {// code for IE6, IE5
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  var query="UPDATE ENROL SET progress = CASE WHEN "+progress+" > progress THEN "+progress+" ELSE progress END WHERE studentID = "+<?php echo $userID?>+" AND subjID = 2";
+  xmlhttp.open("GET","ajax_log.php?query="+query,true);
+  xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xmlhttp.send();
 }
 
 </script>

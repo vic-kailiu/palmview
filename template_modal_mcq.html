@@ -3,7 +3,16 @@
   var _selectType = null;
   var qnssIndex = 1000;
 
+  var progress_inited = false;
+
   function loadModalMCQ() {
+    if (!progress_inited) {
+      initProgress(5);
+      progress_inited = true;
+    }
+    initCheckList();
+    // increaseProgress();
+
     var selectType = document.getElementById('selectType').value;
 
     if (qnss == null || _selectType != selectType) {
@@ -20,6 +29,7 @@
                 // { id, type, text, ans, labels, values, opt1, opt2 }
                 qnssIndex = 0;
                 generateModalMCQ(qnss[qnssIndex]);
+                $body.removeClass("loading");
             }
         }
         xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
@@ -74,7 +84,9 @@
     content += "</p>";
     textDiv.innerHTML += content;
 
-    $('#text').on('click', '.clickable', highlight);
+    $('#text').on('click', '.clickable', function() {
+      highlight(this); 
+    } );
 
     content = "";
     var optionModals = qns.opt2.split("#");
@@ -115,6 +127,12 @@
         modal: true,
         buttons: {
           "Next Question": function() {
+            increaseProgress();
+
+            if (checkCompletion()) {
+              updateOverallProgress(4);
+            }
+
             loadModalMCQ();
             $( this ).dialog( "close" );
           },
@@ -167,16 +185,64 @@
 
     return array;
   }
+
+  function fireBack(index, checked) {}
 </script>
+<script type="text/javascript" src="js/checklist.js"></script>
 <style>
 ol {
   display: inline-flex;
   width: 50%;
   padding-left: 5px;
 }
+.list-group-item {
+border: 1px solid #ddd !important;
+}
+.flow-check-list {
+  width: 300px;
+  position: fixed;
+  z-index: 99;
+  right: 20px;
+  top: 100px;
+}
+.list-group-item-success {
+  color: #3c763d !important;
+  background-color: #dff0d8 !important;
+}
+
+.list-group-item-info {
+  color: #31708f !important;
+  background-color: #d9edf7 !important;
+}
+
+.list-group-item-warning {
+  color: #8a6d3b !important;
+  background-color: #fcf8e3 !important;
+}
+
+.list-group-item-danger {
+  color: #a94442 !important;
+  background-color: #f2dede !important;
+}
 </style>
+<div class="row col-sm-7">
+  <div class="progress">
+    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+  </div>
+</div>
 <div class="row">
-  <div class="col-lg-12">
+  <div class="flow-check-list">
+    <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
+          <li class="list-group-item" data-color="info">Read the question</li>
+          <li class="list-group-item" data-color="info">Identify the important words</li>
+          <li class="list-group-item" data-color="info">Get a plan</li>
+          <li class="list-group-item" data-color="info">Have it done</li>
+          <li class="list-group-item" data-color="info">Triple checks</li>
+        </ul>
+    </div>
+  </div>
+  <div class="col-lg-12" style="display:none">
     <button type="button" class="btn btn-success" onclick="loadModalMCQ()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>

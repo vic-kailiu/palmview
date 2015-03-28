@@ -82,23 +82,25 @@ function onPlayerStateChange(event) {
       if (!initialStart) {
         initialStart = true;
         logAction('mouseClick', 'video_start', 
-                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
-                  'null', -1, event.target.B.videoData.video_id);
+                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
+                  'null', -1, event.target.l.videoData.video_id);
       } else {
         logAction('mouseClick', 'video_start', 
-                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
+                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
                   'null', 0, 'null');
       }
       break;
     case YT.PlayerState.PAUSED:
       logAction('mouseClick', 'video_pause', 
-                  event.target.B.videoData.video_id, event.target.getCurrentTime(),
-                  'null', -1, event.target.B.videoData.video_id);
+                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
+                  'null', -1, event.target.l.videoData.video_id);
       break;
     case YT.PlayerState.ENDED:
       logAction('mouseClick', 'video_end', 
-                  event.target.B.videoData.video_id, 'null',
-                  'null', 1, event.target.B.videoData.video_id);
+                  event.target.l.videoData.video_id, 'null',
+                  'null', 1, event.target.l.videoData.video_id);
+
+      updateOverallProgress(2);
 
       $('<div/>').html('Tutorial Complete, well done! Want to go to next one? ').dialog({
         resizable: false,

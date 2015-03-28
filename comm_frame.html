@@ -39,32 +39,32 @@
 <script src="js/page_home.js"></script>
 <script src="js/page_video.js"></script>
 <script src="js/page_practice.js"></script>
-<script type="application/javascript">
+<script src="js/page_quiz.js"></script>
+<script>
 window.onbeforeunload = function (e) {
   logEndActivity();
 }
 
-  //Loads the correct sidebar on window load,
-  //collapses the sidebar on window resize.
-  // Sets the min-height of #page-wrapper to window size
-  $(window).bind("load resize", function() {
-    topOffset = 50;
-    width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
-    if (width < 768) {
-      $('div.nav-collapse').addClass('collapse')
-      topOffset = 100; // 2-row-menu
-    } else {
-      $('div.nav-collapse').removeClass('collapse')
-    }
-    height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
-    height = height - topOffset;
-    if (height < 1) height = 1;
-    if (height > topOffset) {
-      $("#page-wrapper").css("min-height", (height) + "px");
-    }
-  });
+//Loads the correct sidebar on window load,
+//collapses the sidebar on window resize.
+// Sets the min-height of #page-wrapper to window size
+$(window).bind("load resize", function() {
+  topOffset = 50;
+  width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
+  if (width < 768) {
+    $('div.nav-collapse').addClass('collapse')
+    topOffset = 100; // 2-row-menu
+  } else {
+    $('div.nav-collapse').removeClass('collapse')
+  }
+  height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
+  height = height - topOffset;
+  if (height < 1) height = 1;
+  if (height > topOffset) {
+    $("#page-wrapper").css("min-height", (height) + "px");
+  }
+});
 
-    var phases = null
     var currentPhaseIndex = -1;
     var phases = null;
     $body = $("body");
@@ -112,10 +112,24 @@ window.onbeforeunload = function (e) {
         eleA.appendChild(eleSpan);
         eleA.id = "mn_" + phases[i].label;
 
-        eleA.addEventListener('click', function(e) {
-          loadPageWithLabel(e.target.id.substring(3));
-        });
+        if (eleA.addEventListener) {
+          eleA.addEventListener('click', function(e) {
+            var key = (e.target.id.indexOf("mn_") > -1 )?
+                          e.target.id : e.target.parentNode.id;
 
+            if (key.indexOf("mn_") > -1)
+              loadPageWithLabel(key.substring(3));
+          });
+        } else if (eleA.attachEvent) {
+          eleA.attachEvent('onclick', function(e) {
+            var key = (e.target.id.indexOf("mn_") > -1 )?
+                          e.target.id : e.target.parentNode.id;
+
+            if (key.indexOf("mn_") > -1)
+              loadPageWithLabel(key.substring(3));
+          });
+        }
+        
         eleLi.appendChild(eleA);
 
         if (i == 0)
@@ -127,6 +141,7 @@ window.onbeforeunload = function (e) {
       }
 
       decorateMenu();
+      updateMenuProgress();
    }
 
    function loadPageWithLabel(label) {
@@ -158,7 +173,7 @@ window.onbeforeunload = function (e) {
         case "PAGE":      loadDashboard();  break;
         case "VIDEO":     loadVideo();      break;
         case "PRACTICE":  loadPractice();   break;
-        case "QUIZ":      loadQuiz();       break; 
+        case "QUIZ":      loadQuizPage();       break; 
         default:          loadDashboard();
       }
 
@@ -239,6 +254,43 @@ window.onbeforeunload = function (e) {
         cursorborder: ''
     });
    }
+
+  var overallProgress = 1;
+
+  function updateMenuProgress(){
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.open("GET","ajax_2way.php?query=SELECT progress FROM ENROL WHERE studentID = "+<?php echo $userID?>+" AND subjID = 2",false);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.onreadystatechange=function(){
+      if (xmlhttp.readyState==4 && xmlhttp.status==200){
+        var overallProgress = parseInt(xmlhttp.responseText);
+
+        var menu = document.getElementById('nav-accordion');
+        for (var i = overallProgress + 3; i < menu.children.length; i++) {
+          menu.children[i].children[0].classList.add('disableMenuClick');
+        }
+      }
+    }
+    xmlhttp.send();
+  }
+
+  function updateOverallProgress(progress) {
+    if (overallProgress >= progress) return;
+    overallProgress = progress;
+
+    document.getElementById('nav-accordion')
+      .children[overallProgress+2].children[0].classList.remove('disableMenuClick');
+
+    logProgress(overallProgress);
+  }
 
   function removeMainContent() {
     wrapper = document.getElementsByClassName("wrapper")[0];

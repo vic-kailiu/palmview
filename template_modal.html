@@ -31,6 +31,7 @@
                 // { id, type, text, ans, labels, values, opt1, opt2 }
                 qnssIndex = 0;
                 generateQns(qnss[qnssIndex]);
+                $body.removeClass("loading");
             }
         }
         xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
@@ -137,7 +138,7 @@
         logAction("keyPres", "answer", qnss[qnssIndex].id, event.currentTarget.value, 
                   ~~( eval(event.currentTarget.value)==eval(qnss[qnssIndex].ans) ), 0, 'null');
       }
-      else {
+      else if (event.target.id.indexOf('para') > -1) {
           var correct = false;
           var s;
           var t;

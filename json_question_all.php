@@ -5,7 +5,7 @@ include('conn.php');
 try{
 	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qID` = 363');
 	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` ="MODAL_D1"');
-	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY RAND( ) LIMIT 5');
+	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY `qnsType`');
 	$pstmt->execute(array($type));
 	$pstmt->bindColumn(1,$id);
 	$pstmt->bindColumn(2,$qtype);

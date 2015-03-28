@@ -27,7 +27,7 @@
 			speed        : 'slow',
 			saveState	 : true,
 			disableLink	 : true,
-			showCount : false,
+			showCount : false//,
 //			cookie	: 'dcjq-accordion'
 		};
 

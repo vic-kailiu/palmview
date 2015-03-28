@@ -1,0 +1,646 @@
+<script type="text/javascript">
+  var qnss = null;
+  var _selectType = null;
+  var qnssIndex = 1000;
+
+  var session_difficulty = 2;
+  // 2 -- no hint
+  // 1 -- number marked
+  // 0 -- labeled
+  var question_difficulty = -1;
+  // load question from DB
+  // for each time the user hit the generate button, if the selecttype doesn't change and there is already a question set, then
+  // the system will just randome select question from the previously retrieved questions. otherwise, it will query to the server
+  // for more questions.
+
+  var previousSection;
+  var previousButton;
+
+  var progress_inited = false;
+
+  function loadModalTUT() {
+    if (!progress_inited) {
+      initProgress(3);
+      progress_inited = true;
+    }
+    initCheckList();
+
+    $( "#button_modal_select" ).click(function(event) {
+      event.preventDefault();
+      dialog = $( "#dialog_modal_select" ).dialog({
+        width: 600,
+        height: 400,
+        modal: true,
+        buttons: {
+          Ok: function() {
+            //checkItem(2, true);
+            document.getElementById("modal_select").style.display = 'none';
+            document.getElementById('modal').style.display = '';
+            generateCore(questionStr);
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+      $(".model_select_button").on('click', function(e) {
+        if (previousButton)  previousButton.classList.remove("active");
+        if (previousSection) previousSection.style.display = 'none';
+
+        e.target.classList.add("active");
+        var targetDiv = document.getElementById("section_"+e.target.id.substring(7));
+        targetDiv.style.display = '';
+
+        if (targetDiv.innerHTML.length == 0) {
+          var select_content = "";
+          var optionModals = [];
+
+          if (e.target.id.substring(7) == 'addition') {
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A1'));
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A2'));
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A3'));
+          } else if (e.target.id.substring(7) == 'subtraction') {
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_S1'));
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_S2'));
+          } else if (e.target.id.substring(7) == 'multiplication') {
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_M1'));
+          } else {
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_D1'));
+            optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_D2'));
+          }
+
+          for (var k = 0; k< optionModals.length; k++) {
+            optionModal = optionModals[k].split("@");
+            
+            var labelArr = parsePara(optionModal[1]);
+            var valueJSONArr = [];
+            var valueStringArr = optionModal[2].split('|');
+            valueJSONArr.push( parsePara(valueStringArr[0]) );
+            valueJSONArr.push( parsePara(valueStringArr[1]) );
+
+            select_content += '<ol class="row" style="padding: 0;"><input type="radio" name="blabla" value="'+optionModals[k]+'" onclick="select_modal_click(event)" style="float: left;">';
+            select_content += '<div style="float: left;width: 90%;">';
+            select_content += populateModal(optionModal[0], labelArr, valueJSONArr, null, 0);
+            select_content += '</div></ol>';
+          }
+          targetDiv.innerHTML = select_content;
+        }
+
+        previousButton = e.target;
+        previousSection = targetDiv;
+      });
+    });
+
+    //by now, every time the question is set back to the original difficulty
+    question_difficulty = session_difficulty;
+    var selectType = document.getElementById('selectType').value;
+
+    if (qnss == null || _selectType != selectType) {
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                qnss = JSON.parse(xmlhttp.responseText);
+                // { id, type, text, ans, labels, values, opt1, opt2 }
+                qnssIndex = 0;
+                generateQns(qnss[qnssIndex]);
+                $body.removeClass("loading");
+            }
+        }
+        xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
+        xmlhttp.send();
+    } else {
+        qnssIndex += 1;
+        if (qnssIndex < qnss.length) {
+            generateQns(qnss[qnssIndex]);
+        } else {
+            qnss = null;
+            loadModalTUT();
+        }
+    }
+
+    _selectType = selectType;
+  }
+
+  var questionStr;
+  function select_modal_click(e) {
+    questionStr = e.target.value;
+  }
+
+  var highlightable;
+
+  function generateQns(qns) {
+    // there is no label for multiplication/division
+    // if (qns.type == "MODAL_M1" || qns.type == "MODAL_D1" || qns.type == "MODAL_D1")
+    //     question_difficulty--;
+
+    // clear content
+    var textDiv = document.getElementById('text');
+    if (!textDiv) {
+        alert("cannot get text div!");
+        return;
+    }
+    textDiv.innerHTML = "";
+
+    document.getElementById("modal_select").style.display = '';
+    document.getElementById('button_modal_select').classList.add('disabled');
+    
+    var questionDiv = document.getElementById('modal');
+    if (!questionDiv) {
+        alert("cannot get modal div!");
+        return;
+    }
+    questionDiv.innerHTML = ""; //reset content
+
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+
+    document.getElementById('modal').style.display = 'none';
+
+    var hintDiv = document.getElementById('modal_hint');
+    if (!hintDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    hintDiv.innerHTML = ""; //reset content
+    document.getElementById('modal_hint_well').style.display = 'none';
+
+    var answerDiv = document.getElementById('check');
+    if (!answerDiv) {
+        alert("cannot get check div!");
+        return;
+    }
+    check.value = ""; //reset content
+    document.getElementById("overlay_ans").style.display = '';
+    document.getElementById('button_submit').classList.add('disabled');
+
+    document.getElementById("section_addition").innerHTML = '';
+    document.getElementById("section_subtraction").innerHTML = '';
+    document.getElementById("section_multiplication").innerHTML = '';
+    document.getElementById("section_division").innerHTML = '';
+
+    // text section
+    var regex = /([\.,-\/#!?\^&\*;:{}=\-_`~()])/g; //regular expression for punctuations
+    var punctuations = "\.,-\/#!?\^&\*;:{}=\-_`~()";
+    var s = qns.text.replace(/(^\s*)|(\s*$)/gi, "");
+    s = s.replace(/[ ]{2,}/gi, " ");
+    s = s.replace(/\n /, "\n");
+    s = s.replace(regex, ' $1'); //add space before punctuations for splitting
+    words = s.split(" ");
+    //write to html
+    var content = "<p>";
+    for (j = 0; j < words.length; j++) {
+        if (punctuations.indexOf(words[j][0]) > -1) { // is a punctuation
+            content += words[j];
+        } else {
+            if (j > 0) content += "&nbsp;";
+            content += "<button class='clickable'>" + words[j] + "</button>";
+        }
+    }
+    content += "</p>";
+    textDiv.innerHTML += content;
+
+    highlightable = false;
+
+    $('#text').on('click', '.clickable', function() {
+      // var checkedItems = getCheckedItems();
+      // if (checkedItems && checkedItems.hasOwnProperty(0)) {
+      if (highlightable) {
+        highlight(this); 
+        //checkItem(1, true);
+      }
+    } );
+
+    //answer input
+    // content = 'Enter your answer :<input type="text" id="check" class="numInput" name="check" style="margin: 0 5px; height: 34px;">';
+    // content += "<button type='button' class='btn btn-success' onclick='checkanswer()'>Check Answer</button>";
+    // answerDiv.innerHTML = content;
+
+    logAction('mouseClick', 'qnsStart', qnss[qnssIndex].id, 'null', 'null', -1, 'modal_'+qnss[qnssIndex].id);
+
+    fireBack(-1, true); // open up the first dialog
+  }
+
+  function generateCore(qns) {
+    var qnsArr = qns.split("@");
+
+    var questionDiv = document.getElementById('modal');
+    if (!questionDiv) {
+        alert("cannot get modal div!");
+        return;
+    }
+    questionDiv.innerHTML = ""; //reset content
+
+    var dragDiv = document.getElementById('drag_source');
+    if (!dragDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    dragDiv.innerHTML = ""; //reset content
+
+    // parsing the labels and values
+    var labelArr = parsePara(qnsArr[1]);
+    var valueJSONArr = [];
+    var valueStringArr = qnsArr[2].split('|');
+    valueJSONArr.push( parsePara(valueStringArr[0]) );
+    valueJSONArr.push( parsePara(valueStringArr[1]) );
+
+    questionDiv.innerHTML = populateModal(qnsArr[0], labelArr, valueJSONArr, true, 2);
+
+    //drag source
+    if (qnsArr[0] != "MODAL_M1" && qnsArr[0] != "MODAL_D1" && qnsArr[0] != "MODAL_D2") {
+        content = "";
+        var count = 0;
+        for (i = 0; i < labelArr.length; i++) {
+            if (labelArr[i].text == 'dotted' || labelArr[i].text == 'br') continue;
+            content += "<div class='box_model'><div class='model" + count + "' id='model" + count + "' draggable='true' ondragstart='handleDragStart(event)' ondragend='handleDragEnd(event)'>";
+            content += labelArr[i].text + "</div></div>";
+            count ++;
+        }
+        dragDiv.innerHTML = content;
+    }
+
+    $("input").change(function(event){
+      if (event.target.id == "check") {
+        logAction("keyPres", "answer", qnss[qnssIndex].id, event.currentTarget.value, 
+                  ~~( evaluate(event.currentTarget.value)==eval(qnss[qnssIndex].ans) ), 0, 'null');
+      }
+      else if (event.target.id.indexOf('para') > -1) {
+          var correct = false;
+          var s;
+          var t;
+          if (event.target.id.indexOf("_l0") >= 0)
+            s = 0;
+          if (event.target.id.indexOf("_l1") >= 0)
+            s = 1;
+          if (event.target.id.indexOf("_0") >= 0)
+            t = 0;
+          if (event.target.id.indexOf("_1") >= 0)
+            t = 1;
+
+          correct = (event.currentTarget.value == valueJSONArr[s][t].text);
+
+          correct = ~~ correct;
+
+          logAction("keyPres", "label", qnss[qnssIndex].id, event.currentTarget.value, correct, 0, 'null');
+      }
+    });
+  }
+
+  function showHint() {
+    var qns = qnss[qnssIndex];
+
+    var hintDiv = document.getElementById('modal_hint');
+    if (!hintDiv) {
+        alert("cannot get drag div!");
+        return;
+    }
+    hintDiv.innerHTML = ""; //reset content
+
+    // parsing the labels and values
+    var labelArr = parsePara(qns.labels);
+    var valueJSONArr = [];
+    var valueStringArr = qns.values.split('|');
+    valueJSONArr.push( parsePara(valueStringArr[0]) );
+    valueJSONArr.push( parsePara(valueStringArr[1]) );
+
+    document.getElementById('modal_hint_well').style.display = '';
+
+    hintDiv.innerHTML = populateModal(qns.type, labelArr, valueJSONArr, false, question_difficulty);
+  }
+
+  function checkanswer() {
+    var ck = document.getElementById("check").value;
+    
+    if (evaluate(ck) == eval(qnss[qnssIndex].ans)) {
+      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, -1, 'modal_'+qnss[qnssIndex].id);
+
+      $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
+        resizable: false,
+        height:180,
+        modal: true,
+        buttons: {
+          "Next Question": function() {
+            increaseProgress();
+
+            if (checkCompletion()) {
+              updateOverallProgress(3);
+            }
+
+            loadModalTUT();
+            $( this ).dialog( "close" );
+          },
+          Cancel: function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+    } else {
+      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
+       $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
+        resizable: false,
+        modal: true,
+        buttons: {
+          "Try Again": function() {
+            logAction("end", 'review', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
+              $( this ).dialog( "close" );
+          },
+          "Make it easier": function() {
+              if (questionStr.indexOf(qnss[qnssIndex].type) == -1 && question_difficulty == 2) {
+                question_difficulty = 2;
+              } else if (question_difficulty > 0) {
+                question_difficulty -= 1;
+              }
+              logAction("end", 'show_hint', qnss[qnssIndex].id, question_difficulty, 0, -1, 'modal_'+qnss[qnssIndex].id);
+              showHint();
+              $( this ).dialog( "close" );
+          },
+          "Next Question": function() {
+              logAction("end", 'ignore_error', qnss[qnssIndex].id, 'null', 0, 0, 'null');
+              loadModalTUT();
+              $( this ).dialog( "close" );
+          }
+        }
+      });
+
+      if (qnss[qnssIndex].type == "MODAL_M1" || qnss[qnssIndex].type == "MODAL_D1" || qnss[qnssIndex].type == "MODAL_D2") {
+          if (question_difficulty < 2)
+              $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
+      } else {
+          if (question_difficulty < 1)
+              $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
+      }
+    }
+  }
+
+  function fireBack(index, checked) {
+    if (checked)
+        showInstructionDialog(index + 1);
+    // if (index == 1 && checked) {
+    //   // document.getElementById("overlay_modal").style.display = 'none';
+    //   document.getElementById('button_modal_select').classList.remove('disabled');
+    // }
+    // if (index == 2 && checked) {
+    //   document.getElementById("overlay_ans").style.display = 'none';
+    // }
+  }
+
+  var currentStep;
+
+  function showInstructionDialog(step) {
+    dialogString = [ 
+                    "To start answering the question, let's read the questoin first. Once complete reading, please click on the first item on the checklist.",
+                    "Now, let's identify the important words in the question. Click on the words to highlight them. Again, click on the second item on the checklist once complete.",
+                    'The third step is to get a plan, click on the "Select Plan" to choose the correct plan. Remember to click the third item on the checklist afterwards.', 
+                    "Based on your plan, drag the correct label on the modal and type in the correspond values. Then work on the calculation based on your plan and put the final answer in the answer box. Click on the fourth item on the checklist upon complete.",
+                    'Great! You comes to the final step! Do triple check your answer then you can click on the last item on the checklist.',
+                    'Well done! Click on the "Check Answer" button to check your anser!',
+                    "Based on your plan, type in the correspond values. Then work on the calculation based on your plan and put the final answer in the answer box. Click on the fourth item on the checklist upon complete."
+                    ];
+
+    var instructionText;
+    if ( step == 3 &&
+        (qnss[qnssIndex].type == "MODAL_M1" || qnss[qnssIndex].type == "MODAL_D1" || qnss[qnssIndex].type == "MODAL_D2")) {
+      instructionText = dialogString[6];
+    } else {
+      instructionText = dialogString[step];
+    }
+
+    currentStep = step;
+
+    $('<div/>').html(instructionText).dialog({
+      resizable: false,
+      modal: true,
+      buttons: {
+        OK: function() {
+          switch (currentStep) {
+            case 1: highlightable = true; break;
+            case 2: document.getElementById('button_modal_select').classList.remove('disabled'); break;
+            case 3: document.getElementById("overlay_ans").style.display = 'none'; break;
+            case 5: document.getElementById('button_submit').classList.remove('disabled');
+          }
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  }
+
+  // user input could be just string and no numbers, so add this one
+  function evaluate(str) {
+    if (isNaN(str)) return -1;
+    else return eval(str);
+  }
+
+  function generateQnsString(qns, modalType) {
+    if (qns.type == modalType)
+      return qns.type+'@'+qns.labels+'@'+qns.values;
+
+    // parsing the labels and values
+    var labelArr = parsePara(qns.labels);
+    var valueJSONArr = [];
+    var valueStringArr = qns.values.split('|');
+    valueJSONArr.push( parsePara(valueStringArr[0]) );
+    valueJSONArr.push( parsePara(valueStringArr[1]) );
+
+    switch (qns.type){
+      case 'MODAL_A1':
+      case 'MODAL_A2':
+      case 'MODAL_A3':
+      case 'MODAL_S1':
+      case 'MODAL_S2':
+        if (modalType == 'MODAL_A1') {
+          return generateQnsA1(labelArr[0].text, labelArr[1].text, 4, 5, false);
+        }
+        if (modalType == 'MODAL_A2') {
+          return generateQnsA2(labelArr[0].text, labelArr[1].text, 4, 2, false);
+        }
+        if (modalType == 'MODAL_A3') {
+          return generateQnsA3(labelArr[0].text, labelArr[1].text, labelArr[1].text, 4, 3, 2, false);
+        }
+        if (modalType == 'MODAL_S1') {
+          return generateQnsS1(labelArr[0].text, labelArr[1].text, 5, 3, false);
+        }
+        if (modalType == 'MODAL_S2') {
+          return generateQnsS2(labelArr[0].text, labelArr[1].text, 5, 3, false);
+        }
+        if (modalType == 'MODAL_M1') {
+          return generateQnsM1(5, 4, false);
+        }
+        if (modalType == 'MODAL_D1') {
+          return generateQnsD1(20, 5, false);
+        }
+        if (modalType == 'MODAL_D2') {
+          return generateQnsD2(20, 4, false);
+        }
+        break;
+      case 'MODAL_M1':
+      case 'MODAL_D1':
+      case 'MODAL_D2':
+        if (modalType == 'MODAL_A1') {
+          return generateQnsA1(labelArr[0].text, labelArr[0].text, 4, 5, false);
+        }
+        if (modalType == 'MODAL_A2') {
+          return generateQnsA2(labelArr[0].text, labelArr[0].text, 4, 2, false);
+        }
+        if (modalType == 'MODAL_A3') {
+          return generateQnsA3(labelArr[0].text, labelArr[0].text, labelArr[0].text, 4, 3, 2, false);
+        }
+        if (modalType == 'MODAL_S1') {
+          return generateQnsS1(labelArr[0].text, labelArr[0].text, 5, 3, false);
+        }
+        if (modalType == 'MODAL_S2') {
+          return generateQnsS2(labelArr[0].text, labelArr[0].text, 5, 3, false);
+        }
+        if (modalType == 'MODAL_M1') {
+          return generateQnsM1(5, 4, false);
+        }
+        if (modalType == 'MODAL_D1') {
+          return generateQnsD1(20, 5, false);
+        }
+        if (modalType == 'MODAL_D2') {
+          return generateQnsD2(20, 4, false);
+        }
+    }
+  }
+</script>
+<script type="text/javascript" src="js/generator.js"></script>
+<script type="text/javascript" src="js/progress.js"></script>
+<script type="text/javascript" src="js/modal-drag-drop.js"></script>
+<script type="text/javascript" src="js/checklist.js"></script>
+<style>
+.list-group-item {
+border: 1px solid #ddd !important;
+}
+.flow-check-list {
+  width: 300px;
+  position: fixed;
+  z-index: 99;
+  right: 20px;
+  top: 100px;
+}
+.row {
+  position: relative;
+}
+.overlay {
+  background-color: rgba(248, 248, 248, 0.6);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 98;
+}
+.list-group-item-success {
+  color: #3c763d !important;
+  background-color: #dff0d8 !important;
+}
+
+.list-group-item-info {
+  color: #31708f !important;
+  background-color: #d9edf7 !important;
+}
+
+.list-group-item-warning {
+  color: #8a6d3b !important;
+  background-color: #fcf8e3 !important;
+}
+
+.list-group-item-danger {
+  color: #a94442 !important;
+  background-color: #f2dede !important;
+}
+</style>
+<div class="row col-sm-7">
+  <div class="progress">
+    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="flow-check-list">
+    <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
+          <li class="list-group-item" data-color="info">Read the question</li>
+          <li class="list-group-item" data-color="info">Identify the important words</li>
+          <li class="list-group-item" data-color="info">Get a plan</li>
+          <li class="list-group-item" data-color="info">Have it done</li>
+          <li class="list-group-item" data-color="info">Triple checks</li>
+        </ul>
+    </div>
+  </div>
+  <div class="col-lg-12" style="display:none">
+    <button type="button" class="btn btn-success" onclick="loadModalTUT()">Generate Question</button>
+    <select id="selectType" class="btn btn-theme dropdown-toggle">
+      <option value="%">Random (+,-,x,/)</option>
+      <option value="_A%">Addition (+)</option>
+      <option value="_S%">Subtraction (-)</option>
+      <option value="_M%">Multiplication (x)</option>
+      <option value="_D%">Division (/)</option>
+    </select>
+  </div>
+</div>
+<!-- For Question Text and Keywords -->
+<div class="row" style="font-size: 14px;">
+  <!-- Question Text-->
+  <div class="col-sm-5">
+    <h4 id="questionId">Question:</h4>
+    <div id="text"></div>
+  </div>
+  <!-- <div class="overlay" id="overlay_ques"></div> -->
+</div>
+<!-- /.row -->
+<!-- For Question -->
+<div class="row" style="font-size: 14px;">
+  <div class="col-sm-5" id="modal_select">
+    <div class="well well-lg">
+      <a href="#" class="btn btn-block btn-primary btn-default disabled" id='button_modal_select' style="width: 100px;margin: auto;">Select Plan</a>
+    </div>
+  </div>
+  <!-- Question-->
+  <div class="col-sm-5" id="modal">
+  </div>
+  <!-- Drag Source -->
+  <div class="col-sm-2" id="drag_source" style="margin-top: 32px">
+  </div>
+  <!-- <div class="overlay" id="overlay_modal"></div> -->
+</div>
+<!-- /.row -->
+<!-- hint -->
+<div class="row" style="font-size: 14px;">
+  <div class="well well-sm col-sm-5" id="modal_hint_well" style="display:none;margin-left:15px">
+    <u>hint modal</u>:</br>
+    <div id="modal_hint"></div>
+  </div>
+</div>
+<!-- /.row -->
+<div class="row"style="font-size: 14px;">
+  <div id="answer" style="margin-left: 20px;">
+    Enter your answer : <input type="text" id="check" class="numInput" name="check" style="margin: 0 5px; height: 34px;">
+    <button type='button' class='btn btn-success disabled' id='button_submit' onclick='checkanswer()'>Check Answer</button>
+  </div>
+  <div class="overlay" id="overlay_ans"></div>
+</div>
+<div id="dialog_modal_select" title="Get a Plan"style="display:none;overflow-x: hidden;overflow-y: auto;">
+  <div class="row" style="font-size: 14px;padding: 15px 20px">
+    <label style="">Choose Type</label>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default model_select_button active" id="button_addition">Addition</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_subtraction">Subtraction</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_multiplication">Multiplication</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_division">Division</button>
+    </div>
+  </div>
+  <div class="row" id="section_addition"        style="font-size: 14px;padding: 15px 20px;"></div>
+  <div class="row" id="section_subtraction"     style="font-size: 14px;padding: 15px 20px; display:none"></div>
+  <div class="row" id="section_multiplication"  style="font-size: 14px;padding: 15px 20px; display:none"></div>
+  <div class="row" id="section_division"        style="font-size: 14px;padding: 15px 20px; display:none"></div>
+</div>

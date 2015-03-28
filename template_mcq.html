@@ -1,5 +1,7 @@
 <script type="text/javascript"> 
   function loadMCQ() {
+    initCheckList();
+
     var selectType = document.getElementById('selectType').value;
 
     if (window.XMLHttpRequest) {
@@ -14,6 +16,7 @@
             qnss = JSON.parse(xmlhttp.responseText);
             // { id, type, text, ans, labels, values, opt1, opt2 }
             generateMCQ(qnss);
+            $body.removeClass("loading");
         }
     }
     xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
@@ -41,7 +44,26 @@
 
       questionsHtml += '<div class="row" style="margin:0;position: relative;">';
 
-      questionsHtml += '<div class="questions col-sm-6" id="question'+i+'"><p><b>Q'+(i+1)+'</b> '+qnss[i].text+'<span><img class="tickcross" style="display:none"></span></p>';
+      // text section
+      var regex = /([\.,-\/#!?\^&\*;:{}=\-_`~()])/g; //regular expression for punctuations
+      var punctuations = "\.,-\/#!?\^&\*;:{}=\-_`~()";
+      var s = qnss[i].text.replace(/(^\s*)|(\s*$)/gi, "");
+      s = s.replace(/[ ]{2,}/gi, " ");
+      s = s.replace(/\n /, "\n");
+      s = s.replace(regex, ' $1'); //add space before punctuations for splitting
+      words = s.split(" ");
+      //write to html
+      var quesText = "";
+      for (j = 0; j < words.length; j++) {
+          if (punctuations.indexOf(words[j][0]) > -1) { // is a punctuation
+              quesText += words[j];
+          } else {
+              if (j > 0) quesText += "&nbsp;";
+              quesText += "<button class='clickable'>" + words[j] + "</button>";
+          }
+      }
+
+      questionsHtml += '<div class="questions col-sm-6" id="question'+i+'"><p id="text"><b>Q'+(i+1)+'</b> '+quesText+'<span><img class="tickcross" style="display:none"></span></p>';
 
       options = qnss[i].opt1.split('&');
       shuffle(options);
@@ -55,11 +77,19 @@
     }
 
     textDiv.innerHTML = questionsHtml;
+
+    $('#text').on('click', '.clickable', function() {
+      highlight(this); 
+    } );
+
+    logAction('mouseClick', 'qnsStart', 'null', 'null', 'null', -1, 'mcq');
   }
 
   function logMCQ(e) {
+    initCheckList();
     qnsIndex = parseInt(e.target.name.substring(1));
     ans[qnsIndex] = parseInt(qnss[qnsIndex].ans) == parseInt(e.target.value);
+    logAction('mouseClick', 'mcq_select', qnss[qnsIndex].id, 'null', ~~ans[qnsIndex], 0, 'null');
   }
 
   function checkanswer() {
@@ -77,7 +107,8 @@
     }
 
     if ( pass ) {
-      // logPractice("submission", 'null', currentQnsId, 'null', 1, getSQLTimeString(cur), duration);
+      logAction("submission", 'null', 'null', 'null', 1, 1, 'mcq');
+      updateOverallProgress(5);
       $('<div/>').html('ALL CORRECT! Want to practice more? ').dialog({
         resizable: false,
         height:180,
@@ -93,20 +124,23 @@
         }
       });
     } else {
-      // logPractice("submission", 'null', currentQnsId, 'null', 0, getSQLTimeString(cur), duration);
+      logAction("submission", 'null', 'null', 'null', 0, 1, 'mcq');
        $('<div/>').html('QUESTION '+ wrongQnsNo.substring(1) +' IS WRONG! Want to ... ').dialog({
         resizable: false,
         modal: true,
         buttons: {
           "Try Again": function() {
+            logAction("end", 'review', 'null', 'null', 0, -1, 'mcq');
               $( this ).dialog( "close" );
           },
           "Make it easier": function() {
+            logAction("end", 'show_hint', 'null', 'null', 0, -1, 'mcq');
               question_difficulty = 0;
               showMoal();
               $( this ).dialog( "close" );
           },
           "Next Question": function() {
+            logAction("end", 'ignore_error', 'null', 'null', 0, 0, 'null');
               loadModalMCQ();
               $( this ).dialog( "close" );
           }
@@ -154,14 +188,11 @@
 
     return array;
   }
-</script>
-<style>
-ol {
-  display: inline-flex;
-  width: 50%;
-  padding-left: 5px;
-}
 
+  function fireBack(index, checked) {}
+</script>
+<script type="text/javascript" src="js/checklist.js"></script>
+<style>
 .overlay {
   position: absolute;
   width: 100%;
@@ -170,9 +201,49 @@ ol {
   top: 0;
   z-index: 100000;
 }
+.list-group-item {
+border: 1px solid #ddd !important;
+}
+.flow-check-list {
+  width: 300px;
+  position: fixed;
+  z-index: 99;
+  right: 20px;
+  top: 100px;
+}
+.list-group-item-success {
+  color: #3c763d !important;
+  background-color: #dff0d8 !important;
+}
+
+.list-group-item-info {
+  color: #31708f !important;
+  background-color: #d9edf7 !important;
+}
+
+.list-group-item-warning {
+  color: #8a6d3b !important;
+  background-color: #fcf8e3 !important;
+}
+
+.list-group-item-danger {
+  color: #a94442 !important;
+  background-color: #f2dede !important;
+}
 </style>
 <div class="row">
-  <div class="col-lg-12">
+  <div class="flow-check-list">
+    <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
+          <li class="list-group-item" data-color="info">Read the question</li>
+          <li class="list-group-item" data-color="info">Identify the important words</li>
+          <li class="list-group-item" data-color="info">Get a plan</li>
+          <li class="list-group-item" data-color="info">Have it done</li>
+          <li class="list-group-item" data-color="info">Triple checks</li>
+        </ul>
+    </div>
+  </div>
+  <div class="col-lg-12" style="display:none">
     <button type="button" class="btn btn-success" onclick="loadMCQ()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>

@@ -587,6 +587,11 @@ ul.sidebar-menu li ul.sub li a {
     color: #aeb2b7;
 }
 
+.disableMenuClick {
+  pointer-events:none;
+  color: #8B8B8B !important;
+}
+
 ul.sidebar-menu li ul.sub li a:hover {
 	color: white;
 	background: transparent;

@@ -1,8 +1,18 @@
 <script type="text/javascript"> 
-  function loadMCQ() {
+  var _selectType = "MODAL_% MODAL_%";
+  var _number = 10;
+
+  function loadMCQ(types, number) {
+    if (types != null && types != '') {
+      _selectType = types;
+    }
+    if (number !=null && number > 0) {
+      _number = number;
+    }
+
     initCheckList();
 
-    var selectType = document.getElementById('selectType').value;
+    //var selectType = document.getElementById('selectType').value;
 
     if (window.XMLHttpRequest) {
         // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -19,7 +29,7 @@
             $body.removeClass("loading");
         }
     }
-    xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
+    xmlhttp.open("GET", "json_question.php?type=" + _selectType, true);
     xmlhttp.send();
   }  
 
@@ -39,7 +49,8 @@
     ans = [];
     question_difficulty = 2;
 
-    for (i = 0; i<qnss.length; i++) {
+    // 
+    for (i = 0; i<Math.min(_number, qnss.length); i++) {
       ans.push(null);
 
       questionsHtml += '<div class="row" style="margin:0;position: relative;">';
@@ -63,13 +74,13 @@
           }
       }
 
-      questionsHtml += '<div class="questions col-sm-6" id="question'+i+'"><p id="text"><b>Q'+(i+1)+'</b> '+quesText+'<span><img class="tickcross" style="display:none"></span></p>';
+      questionsHtml += '<div class="questions col-sm-6" id="question'+i+'"><p id="text" class="mcq_text"><b>Q'+(i+1)+'</b> '+quesText+'<span><img class="tickcross" style="display:none"></span></p>';
 
       options = qnss[i].opt1.split('&');
       shuffle(options);
 
       for (j = 0; j<options.length; j++) {
-        questionsHtml += '<ol><input type="radio" name="q'+i+'" id="q'+qnss[i].id+'_'+j+'" onclick="logMCQ(event)" value="'+options[j]+'" stype="margin: 2px 5px;">'+options[j]+'</input></ol>';
+        questionsHtml += '<ol><input type="radio" name="q'+i+'" id="q'+qnss[i].id+'_'+j+'" onclick="logMCQ(event)" value="'+options[j]+'" stype="margin: 2px 5px;"> '+options[j]+'</input></ol>';
       }
 
       questionsHtml += '</div>'; // overlay div to disable the question if it is answered correctly
@@ -78,12 +89,41 @@
 
     textDiv.innerHTML = questionsHtml;
 
-    $('#text').on('click', '.clickable', function() {
-      highlight(this); 
+    $('.mcq_text').unbind('click');
+    $('.mcq_text').on('click', '.clickable', function() {
+      mcqhighlight(this); 
     } );
 
     logAction('mouseClick', 'qnsStart', 'null', 'null', 'null', -1, 'mcq');
   }
+
+  function mcqhighlight(e) {
+    var target;
+    if (e.classList.contains("clickable")) {
+        target = e;
+    } else if (this.classList.contains("clickable")) {
+        target = this;
+    } else {
+        return;
+    }
+
+    qnssIndex = target.parentElement.parentElement.id.substr(8,1);
+
+    if (target.style.backgroundColor != '') {
+        target.style.backgroundColor = '';
+        logAction("mouseClick", "de-highlight", qnss[qnssIndex].id, $(target).text(), 'null', 0, 'null');
+    } else {
+        //var keywordDiv = document.getElementById('keywords');
+        $(target).css('background-color', 'yellow');
+        logAction("mouseClick", "highlight", qnss[qnssIndex].id, $(target).text(), 'null', 0, 'null');
+    }
+    
+    /*if (!keywordDiv) {
+        alert("cannot get keywords div!");
+        return;
+    }
+    keywordDiv.value += e.target.textContent + " " + "\n";*/
+}
 
   function logMCQ(e) {
     initCheckList();
@@ -96,7 +136,7 @@
     pass = true;
     wrongQnsNo = '';
 
-    for (i = 0; i<qnss.length; i++) {
+    for (i = 0; i<Math.min(_number, qnss.length); i++) {
       if (ans[i]) {
         document.getElementById("overlay"+i).style.display = "inherit";
         document.getElementById("question"+i).style.color = "lightgray";
@@ -108,41 +148,118 @@
 
     if ( pass ) {
       logAction("submission", 'null', 'null', 'null', 1, 1, 'mcq');
-      updateOverallProgress(5);
-      $('<div/>').html('ALL CORRECT! Want to practice more? ').dialog({
-        resizable: false,
-        height:180,
-        modal: true,
-        buttons: {
-          "Next Question": function() {
-            loadMCQ();
-            $( this ).dialog( "close" );
-          },
-          Cancel: function() {
-            $( this ).dialog( "close" );
+      updateOverallProgress(currentPhaseIndex+1);
+      // $('<div/>').html('ALL CORRECT! Want to practice more? ').dialog({
+      //   resizable: false,
+      //   height:180,
+      //   modal: true,
+      //   buttons: {
+      //     "Practice more": function() {
+      //       loadMCQ();
+      //       $(this).dialog('destroy').remove(); 
+      //       //$( this ).dialog( "close" );
+      //     },
+      //     Cancel: function() {
+      //       $(this).dialog('destroy').remove(); 
+      //       //$( this ).dialog( "close" );
+      //     }
+      //   }
+      // });
+      if (currentPhaseIndex == phases.length - 1) {// all done
+        dialog = $( "#dialog_complete" ).dialog({
+          width: 400,
+          height: 220,
+          modal: true,
+        draggable: false,
+          closeOnEscape: false,
+          open: function(event, ui) {
+             $(".ui-dialog-titlebar-close").hide(); 
+           },
+          buttons: {
+            'Logout': function() {
+              logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'next activity', 'null', 'null', 0, 'null');
+              
+              window.location = "logout.php";
+            },
+            'Practice more': function() {
+              logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'practice more', 'null', 'null', 0, 'null');
+              loadMCQ();
+
+              $( this ).dialog( "close" );
+            },
+            'Close': function() {
+              logAction('mouseClick', 'dialog_select_home', currentPhaseIndex, 'null', 'null', 0, 'null');
+              $( this ).dialog( "close" );
+            }
           }
-        }
-      });
+        });
+      }
+      else {
+        //updateOverallProgress(currentPhaseIndex+1);
+        dialog = $( "#dialog_well_done" ).dialog({
+          width: 400,
+          height: 220,
+          modal: true,
+        draggable: false,
+          closeOnEscape: false,
+          open: function(event, ui) {
+             $(".ui-dialog-titlebar-close").hide(); 
+           },
+          buttons: {
+            'Next activity': function() {
+              logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'next activity', 'null', 'null', 0, 'null');
+              
+              switchToPage(currentPhaseIndex+1);
+              $( this ).dialog( "close" );
+            },
+            'Practice more': function() {
+              logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'practice more', 'null', 'null', 0, 'null');
+              loadMCQ();
+
+              $( this ).dialog( "close" );
+            },
+            'Close': function() {
+              logAction('mouseClick', 'select_modal_cancel_'+currentPhaseIndex, 'null', 'null', 'null', 0, 'null');
+              $( this ).dialog( "close" );
+            }
+          }
+        });
+      }
+
     } else {
       logAction("submission", 'null', 'null', 'null', 0, 1, 'mcq');
-       $('<div/>').html('QUESTION '+ wrongQnsNo.substring(1) +' IS WRONG! Want to ... ').dialog({
+      var str = '';
+      if (wrongQnsNo.length <= 2) {
+        str = 'QUESTION '+ wrongQnsNo.substring(1) +' IS WRONG! Want to ... '
+      } else {
+        str = 'QUESTIONS '+ wrongQnsNo.substring(1) +' ARE WRONG! Want to ... '
+      }
+       $('<div/>').html(str).dialog({
         resizable: false,
         modal: true,
+        draggable: false,
+        closeOnEscape: false,
+        open: function(event, ui) {
+           $(".ui-dialog-titlebar-close").hide(); 
+         },
         buttons: {
           "Try Again": function() {
             logAction("end", 'review', 'null', 'null', 0, -1, 'mcq');
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Make it easier": function() {
             logAction("end", 'show_hint', 'null', 'null', 0, -1, 'mcq');
               question_difficulty = 0;
               showMoal();
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Next Question": function() {
             logAction("end", 'ignore_error', 'null', 'null', 0, 0, 'null');
-              loadModalMCQ();
-              $( this ).dialog( "close" );
+              loadMCQ();
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           }
         }
       });
@@ -153,7 +270,7 @@
   }
 
   function showMoal() {
-    for (var i = 0; i<qnss.length; i++) {
+    for (var i = 0; i<Math.min(_number, qnss.length); i++) {
       if (!ans[i]) {
         modalDiv = document.getElementById('modal'+i);
 
@@ -189,7 +306,9 @@
     return array;
   }
 
-  function fireBack(index, checked) {}
+  function fireBack(index, checked) {
+    logAction('mouseClick', 'progress_mcq'+'index'+'_checked', 'null', 'null', 'null', 0, 'null');
+  }
 </script>
 <script type="text/javascript" src="js/checklist.js"></script>
 <style>
@@ -199,7 +318,7 @@
   height: 100%;
   left: 0;
   top: 0;
-  z-index: 100000;
+  z-index: 99;
 }
 .list-group-item {
 border: 1px solid #ddd !important;
@@ -234,16 +353,17 @@ border: 1px solid #ddd !important;
 <div class="row">
   <div class="flow-check-list">
     <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      <h4>Check List</h4>
       <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
           <li class="list-group-item" data-color="info">Read the question</li>
-          <li class="list-group-item" data-color="info">Identify the important words</li>
+          <li class="list-group-item" data-color="info">Identify and click the important words</li>
           <li class="list-group-item" data-color="info">Get a plan</li>
           <li class="list-group-item" data-color="info">Have it done</li>
           <li class="list-group-item" data-color="info">Triple checks</li>
         </ul>
     </div>
   </div>
-  <div class="col-lg-12" style="display:none">
+  <!-- <div class="col-lg-12" style="display:none">
     <button type="button" class="btn btn-success" onclick="loadMCQ()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>
@@ -252,9 +372,15 @@ border: 1px solid #ddd !important;
       <option value="_M%">Multiplication (x)</option>
       <option value="_D%">Division (/)</option>
     </select>
-  </div>
+  </div> -->
 </div>
 
 <div style="font-size: 14px; margin-top: 20px;" id="questions" />
 <!-- /.row -->
 <div id="answer" style="font-size: 14px;"><button type="button" class="btn btn-success" onclick="checkanswer()">Check Answer</button></div>
+<div id="dialog_well_done" title="Well Done!" style="display:none; padding:10px">
+  <img src="images/welldone.png" style="float: left; width: 30%; margin-right: 10px;">100% completed! You can move to the next section to try more exciting questions!
+</div>
+<div id="dialog_complete" title="Well Done!" style="display:none; padding:10px">
+  <img src="images/welldone.png" style="float: left; width: 30%; margin-right: 10px;">You are awesome! You can go back to any activity to practice more. Or just click "Logout" button and close the window.
+</div>

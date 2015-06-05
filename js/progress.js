@@ -2,7 +2,16 @@ var total_steps;
 var current_step;
 function initProgress(total) {
 	total_steps = total;
-	current_step = 0;
+
+	var step;
+	if (pageViewed < 2 && sessionStorage)
+		step = eval(sessionStorage.getItem('progress'));
+
+	if (step > 0)
+		current_step = step;
+	else
+		current_step = 0;
+	
 	updateProgress();
 }
 
@@ -13,6 +22,8 @@ function increaseProgress() {
 }
 
 function updateProgress() {
+	sessionStorage && sessionStorage.setItem('progress', current_step);
+
 	var progress_bar = document.getElementById('progress-bar');
 	if (!progress_bar) return;
 	var percentage = ''+ parseInt(100*current_step/total_steps) + '%';

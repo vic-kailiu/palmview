@@ -1,7 +1,8 @@
 <?php
 //async sql query to db
 
-$query = $_GET['query'];
+$queryStr = $_GET['query'];
+$query = urldecode($queryStr);
 include('conn.php');
 //echo '<script>alert("'.$query.'")</script>';
 

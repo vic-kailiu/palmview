@@ -1,4 +1,6 @@
  var player;
+ var videos;
+ var _current_video_index;
 
  function loadVideo() {
   if (window.XMLHttpRequest) {
@@ -10,22 +12,50 @@
   }
   xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-      videos = JSON.parse(xmlhttp.responseText)
+      json_videos = JSON.parse(xmlhttp.responseText);
+      videos = new Array();
+
+      videoList = phases[currentPhaseIndex].para1.split(',');
+      videoList.forEach(function(entry){
+        videos.push(json_videos[eval(entry)-1]);
+      });
       
-      eleSelect = document.getElementById("selectVideo");
+      eleNav = document.getElementById("selectVideo");
 
       for (i = 0; i<videos.length; i++) {
-        eleOption = document.createElement("option");
-        eleOption.value = videos[i].videoID;
-        videoTitle = document.createTextNode(videos[i].title);
-        eleOption.appendChild(videoTitle);
-        eleSelect.appendChild(eleOption);
+        eleLi = document.createElement("li");
+        eleA = document.createElement("a");
+        eleA.value = i;//videos[i].videoID;
+        eleA.href = "#"
+        eleA.onclick = onSelectVideo;
+        eleA.innerHTML = videos[i].title;
+        eleLi.appendChild(eleA);
+        eleNav.appendChild(eleLi);
       }
+
+      eleNav.childNodes[0].className = "active";
+
+      // var index;
+      // if (pageViewed < 2 && sessionStorage)
+      //   index = sessionStorage.getItem('progress');
+
+      // if (index > 0)
+      //   _current_video_index = index;
+      // else
+        _current_video_index = 0;
 
       // player
       player && player.destroy;
       if (youtubeAPIReady) {
-        createPlayer();
+        var index;
+        if (pageViewed < 2 && sessionStorage)
+          index = eval(sessionStorage.getItem('progress'));
+
+        if (index > 0)
+          changeVideo(index);
+        else
+          createPlayer();
+        
         initialStart = false;
         $body.removeClass("loading");
       } else {
@@ -60,7 +90,14 @@ var initialStart = false;
 var youtubeAPIReady = 0;
 
 function onYouTubeIframeAPIReady() {
-  createPlayer();
+  var index;
+  if (pageViewed < 2 && sessionStorage)
+    index = eval(sessionStorage.getItem('progress'));
+
+  if (index > 0)
+    changeVideo(index);
+  else
+    createPlayer();
 
   initialStart = false;
   youtubeAPIReady = 1;
@@ -68,8 +105,11 @@ function onYouTubeIframeAPIReady() {
 }
 
 function createPlayer() {
+  sessionStorage && sessionStorage.setItem('progress', _current_video_index);
+
   player = new YT.Player('player', {
-    videoId: document.getElementById("selectVideo").value,
+    videoId: videos[_current_video_index].videoID,
+    playerVars: {rel:0},
     events: {
       'onStateChange': onPlayerStateChange
     }
@@ -77,62 +117,131 @@ function createPlayer() {
 }
 
 function onPlayerStateChange(event) {
+  var videoID = event.target.getVideoData().video_id;
   switch(event.data) {
     case YT.PlayerState.PLAYING:
       if (!initialStart) {
         initialStart = true;
         logAction('mouseClick', 'video_start', 
-                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
-                  'null', -1, event.target.l.videoData.video_id);
+                  videoID, event.target.getCurrentTime(),
+                  'null', -1, videoID);
       } else {
         logAction('mouseClick', 'video_start', 
-                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
+                  videoID, event.target.getCurrentTime(),
                   'null', 0, 'null');
       }
       break;
     case YT.PlayerState.PAUSED:
       logAction('mouseClick', 'video_pause', 
-                  event.target.l.videoData.video_id, event.target.getCurrentTime(),
-                  'null', -1, event.target.l.videoData.video_id);
+                  videoID, event.target.getCurrentTime(),
+                  'null', -1, videoID);
       break;
     case YT.PlayerState.ENDED:
       logAction('mouseClick', 'video_end', 
-                  event.target.l.videoData.video_id, 'null',
-                  'null', 1, event.target.l.videoData.video_id);
+                  videoID, 'null',
+                  'null', 1, videoID);
 
-      updateOverallProgress(2);
+      updateOverallProgress(currentPhaseIndex+1);
 
-      $('<div/>').html('Tutorial Complete, well done! Want to go to next one? ').dialog({
-        resizable: false,
-        width: 350,
-        height:180,
-        modal: true,
-        buttons: {
-          "Play Again": function() {
-            player.playVideo();
-            $( this ).dialog( "close" );
-          },
-          "Next Video": function() {
-            eleSelect = document.getElementById("selectVideo");
-            selectIndex = eleSelect.options.selectedIndex + 1;
-            if (selectIndex < eleSelect.options.length) {
-              eleSelect.value = eleSelect.options[selectIndex].value;
-              onVideoSelectChange();
+      if (_current_video_index == videos.length - 1) {
+        $('<div/>').html('All tutorials completed, well done! Want to go to next activity? ').dialog({
+          resizable: false,
+          width: 350,
+          height:180,
+          modal: true,
+        draggable: false,
+          closeOnEscape: false,
+          open: function(event, ui) {
+             $(".ui-dialog-titlebar-close").hide(); 
+           },
+          buttons: {
+            "Next Activity": function() {
+              logAction('mouseClick', 'video_next_phaes', 
+                        videos[_current_video_index].videoID, currentPhaseIndex+1, 'null', 0, 'null');
+              switchToPage(currentPhaseIndex+1);
+
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
+            },
+            "Play Again": function() {
+              logAction('mouseClick', 'video_replay', 
+                        videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+              player.playVideo();
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
+            },
+            Cancel: function() {
+              logAction('mouseClick', 'video_stop', 
+                        videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
             }
-            $( this ).dialog( "close" );
-          },
-          Cancel: function() {
-            $( this ).dialog( "close" );
           }
-        }
-      });
+        });
+      } else {
+        $('<div/>').html('Tutorial completed, well done! Want to go to next one? ').dialog({
+          resizable: false,
+          width: 350,
+          height:180,
+          modal: true,
+          closeOnEscape: false,
+          open: function(event, ui) {
+             $(".ui-dialog-titlebar-close").hide(); 
+           },
+          buttons: {
+            "Next Video": function() {
+              logAction('mouseClick', 'video_select', 
+                        videos[_current_video_index].videoID, videos[_current_video_index+1].videoID, 'null', 0, 'null');
+              eleSelect = document.getElementById("selectVideo");
+              eleSelect.childNodes[_current_video_index].className = "";
+              _current_video_index++;
+              eleSelect.childNodes[_current_video_index].className = "active";
+              fireVideoSelectChange();
 
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
+            },
+            "Play Again": function() {
+              logAction('mouseClick', 'video_replay', 
+                        videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+              player.playVideo();
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
+            },
+            Cancel: function() {
+              logAction('mouseClick', 'video_stop', 
+                        videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+              $(this).dialog('destroy').remove();
+              //$( this ).dialog( "close" );
+            }
+          }
+        });
+      }
       break;
   }
 }
 
-function onVideoSelectChange() {
-  player.destroy();
+function onSelectVideo(e) {
+  if (e) {
+    var target = e.srcElement || e.target;
+    if (target && target.value != null)
+      changeVideo(target.value);
+  }
+}
+
+function changeVideo(index) {
+  eleSelect = document.getElementById("selectVideo");
+    eleSelect.childNodes[_current_video_index].className = "";
+    _current_video_index = index;
+    eleSelect.childNodes[_current_video_index].className = "active";
+    videos && videos[_current_video_index] 
+    && logAction('mouseClick', 'video_select', 
+                  videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+    fireVideoSelectChange();
+}
+
+function fireVideoSelectChange() {
+  player && player.destroy();
   createPlayer();
 
   initialStart = false;

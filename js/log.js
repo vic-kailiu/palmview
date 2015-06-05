@@ -14,7 +14,7 @@ function logIntoServer(log){
 			//alert(xmlhttp.responseText);
 		}
 	}
-	xmlhttp.open("GET","ajax_log.php?query="+query,false);
+	xmlhttp.open("GET","ajax_log.php?query="+encodeURI(query),false);
 	xmlhttp.send();
 }
 function getSQLTimeString(date){

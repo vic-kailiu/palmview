@@ -100,7 +100,7 @@ function generateQnsA3(label1, label2, label3, scala1, scala2, scala3, generateM
 		console.log(values);
 	}
 
-	var output = 'MODAL_A2@' + labels+'@'+values;
+	var output = 'MODAL_A3@' + labels+'@'+values;
 	if (!generateMCQ)
 		return output;
 

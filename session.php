@@ -4,7 +4,8 @@ session_start();// Starting Session
 $user_check=$_SESSION['name'];
 
 if (!isset($user_check)) {
-	header('Location:index_login.php');	 // Redirecting To Home Page
+	header("Location: ../index.html"); // Redirecting To Home Page
+	//header('Location:index_login.php');	 // Redirecting To Home Page
 }
 
 include('conn.php');
@@ -23,6 +24,7 @@ catch (Exception $e) {
 }
 
 if (!isset($name)) {
-	header('Location:index_login.php');	 // Redirecting To Home Page
+	header("Location: ../index.html"); // Redirecting To Home Page
+	//header('Location:index_login.php');	 // Redirecting To Home Page
 }
 ?>

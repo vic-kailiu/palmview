@@ -1,6 +1,7 @@
 <script type="text/javascript">
   var qnss = null;
-  var _selectType = null;
+  var _selectType = "MODAL_% MODAL_%";
+  var _number = 5;
   var qnssIndex = 1000;
 
   var session_difficulty = 2;
@@ -18,33 +19,83 @@
 
   var progress_inited = false;
 
-  function loadModalTUT() {
+  function loadModalTUT(types, number) {
+    if (number !=null && number > 0) {
+      _number = number;
+    }
+
     if (!progress_inited) {
-      initProgress(3);
+      initProgress(_number);
       progress_inited = true;
     }
     initCheckList();
 
-    $( "#button_modal_select" ).click(function(event) {
+    if (types != null && types != '') {
+      _selectType = types;
+    }
+
+    $( "#button_modal_select" ).click(onButtonModalSelect);
+
+    function onButtonModalSelect(event) {
       event.preventDefault();
+      logAction('mouseClick', 'select_modal', qnss[qnssIndex].id, 'null', 'null', 0, 'null');
       dialog = $( "#dialog_modal_select" ).dialog({
         width: 600,
         height: 400,
         modal: true,
+        closeOnEscape: false,
+          open: function(event, ui) {
+             $(".ui-dialog-titlebar-close").hide(); 
+           },
         buttons: {
           Ok: function() {
             //checkItem(2, true);
-            document.getElementById("modal_select").style.display = 'none';
+            logAction('mouseClick', 'select_modal_complete_'+questionStr.substr(0,8), qnss[qnssIndex].id, 'null', 'null', 0, 'null');
+            //document.getElementById("modal_select").style.display = 'none';
             document.getElementById('modal').style.display = '';
             generateCore(questionStr);
             $( this ).dialog( "close" );
           },
-          Cancel: function() {
+          'Close': function() {
+            logAction('mouseClick', 'select_modal_cancel', qnss[qnssIndex].id, 'null', 'null', 0, 'null');
             $( this ).dialog( "close" );
           }
         }
       });
+
+      var selectedTab = document.getElementById('button_addition');
+      if (selectedTab)
+        selectedTab.classList.add('active');
+      if (previousButton)  previousButton.classList.remove("active");
+      if (previousSection) previousSection.style.display = 'none';
+
+
+      var targetDiv = document.getElementById("section_addition");
+      targetDiv.style.display = '';
+      var select_content = "";
+      var optionModals = [];
+      optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A1'));
+      optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A2'));
+      optionModals.push(generateQnsString(qnss[qnssIndex], 'MODAL_A3'));       
+      for (var k = 0; k< optionModals.length; k++) {
+        optionModal = optionModals[k].split("@");
+        var labelArr = parsePara(optionModal[1]);
+        var valueJSONArr = [];
+        var valueStringArr = optionModal[2].split('|');
+        valueJSONArr.push( parsePara(valueStringArr[0]) );
+        valueJSONArr.push( parsePara(valueStringArr[1]) );
+        select_content += '<ol class="row" style="padding: 0px 0px 30px;"><input type="radio" name="blabla" value="'+optionModals[k]+'" onclick="select_modal_click(event)" style="float: left;font-size: 40px; margin: auto 10px;">';
+        select_content += '<div style="float: left;width: 90%;">';
+        select_content += populateModal(optionModal[0], labelArr, valueJSONArr, null, 0);
+        select_content += '</div></ol>';
+      }
+      targetDiv.innerHTML = select_content;
+      previousButton = document.getElementById("button_addition");
+      previousSection = targetDiv;
+
+      $(".model_select_button").unbind('click');
       $(".model_select_button").on('click', function(e) {
+        logAction('mouseClick', 'select_modal_choose_type_'+e.target.id.substring(7), qnss[qnssIndex].id, 'null', 'null', 0, 'null');
         if (previousButton)  previousButton.classList.remove("active");
         if (previousSection) previousSection.style.display = 'none';
 
@@ -79,7 +130,7 @@
             valueJSONArr.push( parsePara(valueStringArr[0]) );
             valueJSONArr.push( parsePara(valueStringArr[1]) );
 
-            select_content += '<ol class="row" style="padding: 0;"><input type="radio" name="blabla" value="'+optionModals[k]+'" onclick="select_modal_click(event)" style="float: left;">';
+            select_content += '<ol class="row" style="padding: 0px 0px 30px;"><input type="radio" name="blabla" value="'+optionModals[k]+'" onclick="select_modal_click(event)" style="float: left; font-size: 40px; margin: auto 10px;">';
             select_content += '<div style="float: left;width: 90%;">';
             select_content += populateModal(optionModal[0], labelArr, valueJSONArr, null, 0);
             select_content += '</div></ol>';
@@ -90,13 +141,15 @@
         previousButton = e.target;
         previousSection = targetDiv;
       });
-    });
+
+      // $("button_addition").click();
+    }
 
     //by now, every time the question is set back to the original difficulty
     question_difficulty = session_difficulty;
-    var selectType = document.getElementById('selectType').value;
+    //var selectType = document.getElementById('selectType').value;
 
-    if (qnss == null || _selectType != selectType) {
+    if (qnss == null) {// || _selectType != selectType) {
         if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp = new XMLHttpRequest();
@@ -110,10 +163,12 @@
                 // { id, type, text, ans, labels, values, opt1, opt2 }
                 qnssIndex = 0;
                 generateQns(qnss[qnssIndex]);
+                showVideo();
                 $body.removeClass("loading");
             }
         }
-        xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
+        // TODO: add number on it. currently the php will just echo 10 entries and we can control how many will reach 100%
+        xmlhttp.open("GET", "json_question.php?type=" + _selectType, true);
         xmlhttp.send();
     } else {
         qnssIndex += 1;
@@ -125,11 +180,13 @@
         }
     }
 
-    _selectType = selectType;
+    //_selectType = selectType;
+    questionStr = null;
   }
 
   var questionStr;
   function select_modal_click(e) {
+    logAction('mouseClick', 'select_modal_click_'+e.target.value.substr(0,8), qnss[qnssIndex].id, 'null', 'null', 0, 'null');
     questionStr = e.target.value;
   }
 
@@ -212,7 +269,9 @@
 
     highlightable = false;
 
+    $("#text").unbind('click');
     $('#text').on('click', '.clickable', function() {
+      console.log('clicked'+highlightable);
       // var checkedItems = getCheckedItems();
       // if (checkedItems && checkedItems.hasOwnProperty(0)) {
       if (highlightable) {
@@ -226,12 +285,29 @@
     // content += "<button type='button' class='btn btn-success' onclick='checkanswer()'>Check Answer</button>";
     // answerDiv.innerHTML = content;
 
+    // don't disalbe anything for now
+    highlightable = true;
+    document.getElementById('button_modal_select').classList.remove('disabled');
+    document.getElementById("overlay_ans").style.display = 'none';
+    $("#val1").val("");
+    $("#val2").val("");
+    $("#val3").val("");
+    $("#result").val("");
+    $("#val3").hide();
+    $("#operator2").hide();
+    $("#overlay_eq").show();
+    document.getElementById('button_submit').classList.remove('disabled');
+
     logAction('mouseClick', 'qnsStart', qnss[qnssIndex].id, 'null', 'null', -1, 'modal_'+qnss[qnssIndex].id);
 
     fireBack(-1, true); // open up the first dialog
+    //showVideo();
   }
 
   function generateCore(qns) {
+    document.getElementById('modal_select').children[0].className = '';
+
+
     var qnsArr = qns.split("@");
 
     var questionDiv = document.getElementById('modal');
@@ -270,6 +346,28 @@
         dragDiv.innerHTML = content;
     }
 
+    //equation
+    switch (qnsArr[0].substr(6, 1)) {
+      case 'A':
+        $('#operator1').html('+');
+        if (qnsArr[0] == "MODAL_A3") {
+          $("#val3").show();
+          $("#operator2").show();
+          $('#operator2').html('+');
+        }
+      break;
+      case 'S':
+        $('#operator1').html('-');
+      break;
+      case 'M':
+        $('#operator1').html('x');
+      break;
+      case 'D':
+        $('#operator1').html('÷');
+      break;
+    }
+    $("#overlay_eq").hide();
+
     $("input").change(function(event){
       if (event.target.id == "check") {
         logAction("keyPres", "answer", qnss[qnssIndex].id, event.currentTarget.value, 
@@ -293,6 +391,9 @@
           correct = ~~ correct;
 
           logAction("keyPres", "label", qnss[qnssIndex].id, event.currentTarget.value, correct, 0, 'null');
+      }
+      else {
+        logAction("keyPres", "equation_"+event.currentTarget.id, qnss[qnssIndex].id, event.currentTarget.value, 'null', 0, 'null');
       }
     });
   }
@@ -319,29 +420,82 @@
     hintDiv.innerHTML = populateModal(qns.type, labelArr, valueJSONArr, false, question_difficulty);
   }
 
+  function complete_activity() {
+    updateOverallProgress(currentPhaseIndex+1);
+    $("#complete_correct").html('Your score is '+ Math.round(correct/_number*100) + "%.");
+
+    dialog = $( "#dialog_well_done" ).dialog({
+      width: 400,
+      height: 220,
+      modal: true,
+      draggable: false,
+      closeOnEscape: false,
+      open: function(event, ui) {
+         $(".ui-dialog-titlebar-close").hide(); 
+       },
+      buttons: {
+        'Next activity': function() {
+          logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'next activity', 'null', 'null', 0, 'null');
+          
+          switchToPage(currentPhaseIndex+1);
+          $( this ).dialog( "close" );
+        },
+        'Practice more': function() {
+          logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'practice more', 'null', 'null', 0, 'null');
+          progress_inited = false;
+          sessionStorage && sessionStorage.setItem('progress', 0);
+          loadModalTUT();
+
+          $( this ).dialog( "close" );
+        },
+        'Close': function() {
+          logAction('mouseClick', 'select_modal_cancel', qnss[qnssIndex].id, 'null', 'null', 0, 'null');
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+
+  }
+
+  var correct = 0;
+
   function checkanswer() {
     var ck = document.getElementById("check").value;
+
+    // validate the equation
+    if ($("#val3").css('display') != 'none')
+      equationStr = ""+$("#val1").val()+$("#operator1").text()+$("#val2").val()+$("#operator2").text()+$("#val3").val()+"="+$("#result").val();
+    else
+      equationStr = ""+$("#val1").val()+$("#operator1").text()+$("#val2").val()+"="+$("#result").val();
+
+    logAction("submission", 'tut_equation', qnss[qnssIndex].id, equationStr, 'null', -1, 'modal_'+qnss[qnssIndex].id);
+
     
     if (evaluate(ck) == eval(qnss[qnssIndex].ans)) {
       logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, -1, 'modal_'+qnss[qnssIndex].id);
+      correct++;
+      increaseProgress();
 
-      $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
+      if (qnssIndex == _number-1){
+        //if (checkCompletion()) {
+        complete_activity();
+        return;
+      }
+
+      $('<div/>').html('CORRECT ANSWER! Want to ...').dialog({
         resizable: false,
         height:180,
         modal: true,
+        draggable: false,
         buttons: {
           "Next Question": function() {
-            increaseProgress();
-
-            if (checkCompletion()) {
-              updateOverallProgress(3);
-            }
-
             loadModalTUT();
-            $( this ).dialog( "close" );
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           },
-          Cancel: function() {
-            $( this ).dialog( "close" );
+          'Close': function() {
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           }
         }
       });
@@ -350,36 +504,50 @@
        $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
         resizable: false,
         modal: true,
+        draggable: false,
+        closeOnEscape: false,
+        open: function(event, ui) {
+           $(".ui-dialog-titlebar-close").hide(); 
+         },
         buttons: {
           "Try Again": function() {
             logAction("end", 'review', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Make it easier": function() {
-              if (questionStr.indexOf(qnss[qnssIndex].type) == -1 && question_difficulty == 2) {
-                question_difficulty = 2;
-              } else if (question_difficulty > 0) {
+              // if (questionStr && questionStr.indexOf(qnss[qnssIndex].type) == -1 && question_difficulty == 2) {
+              //   question_difficulty = 2;
+              // } else 
+              if (question_difficulty > 0) {
                 question_difficulty -= 1;
               }
               logAction("end", 'show_hint', qnss[qnssIndex].id, question_difficulty, 0, -1, 'modal_'+qnss[qnssIndex].id);
               showHint();
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Next Question": function() {
               logAction("end", 'ignore_error', qnss[qnssIndex].id, 'null', 0, 0, 'null');
-              loadModalTUT();
-              $( this ).dialog( "close" );
+              increaseProgress();
+              if (checkCompletion()){//qnssIndex == _number-1){
+                complete_activity();
+              } else {
+                loadModalTUT();
+              }
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           }
         }
       });
 
-      if (qnss[qnssIndex].type == "MODAL_M1" || qnss[qnssIndex].type == "MODAL_D1" || qnss[qnssIndex].type == "MODAL_D2") {
-          if (question_difficulty < 2)
-              $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
-      } else {
+      // if (qnss[qnssIndex].type == "MODAL_M1" || qnss[qnssIndex].type == "MODAL_D1" || qnss[qnssIndex].type == "MODAL_D2") {
+      //     if (question_difficulty < 2)
+      //         $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
+      // } else {
           if (question_difficulty < 1)
               $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
-      }
+      // }
     }
   }
 
@@ -399,12 +567,12 @@
 
   function showInstructionDialog(step) {
     dialogString = [ 
-                    "To start answering the question, let's read the questoin first. Once complete reading, please click on the first item on the checklist.",
+                    "To start answering the question, let's read the question first. Once complete reading, please click on the first item on the checklist.",
                     "Now, let's identify the important words in the question. Click on the words to highlight them. Again, click on the second item on the checklist once complete.",
                     'The third step is to get a plan, click on the "Select Plan" to choose the correct plan. Remember to click the third item on the checklist afterwards.', 
                     "Based on your plan, drag the correct label on the modal and type in the correspond values. Then work on the calculation based on your plan and put the final answer in the answer box. Click on the fourth item on the checklist upon complete.",
                     'Great! You comes to the final step! Do triple check your answer then you can click on the last item on the checklist.',
-                    'Well done! Click on the "Check Answer" button to check your anser!',
+                    'Well done! Click on the "Check Answer" button to check your answer!',
                     "Based on your plan, type in the correspond values. Then work on the calculation based on your plan and put the final answer in the answer box. Click on the fourth item on the checklist upon complete."
                     ];
 
@@ -421,24 +589,73 @@
     $('<div/>').html(instructionText).dialog({
       resizable: false,
       modal: true,
+        draggable: false,
+      closeOnEscape: false,
+      open: function(event, ui) {
+         $(".ui-dialog-titlebar-close").hide(); 
+       },
       buttons: {
         OK: function() {
-          switch (currentStep) {
-            case 1: highlightable = true; break;
-            case 2: document.getElementById('button_modal_select').classList.remove('disabled'); break;
-            case 3: document.getElementById("overlay_ans").style.display = 'none'; break;
-            case 5: document.getElementById('button_submit').classList.remove('disabled');
-          }
-          $( this ).dialog( "close" );
+          logAction('mouseClick', 'start_step', currentStep, 'null', 'null', 0, 'null');
+          // switch (currentStep) {
+          //   case 1: highlightable = true; break;
+          //   case 2: document.getElementById('button_modal_select').classList.remove('disabled'); break;
+          //   case 3: document.getElementById("overlay_ans").style.display = 'none'; break;
+          //   case 5: document.getElementById('button_submit').classList.remove('disabled');
+          // }
+          $(this).dialog('destroy').remove(); 
+          //$( this ).dialog( "close" );
         }
       }
     });
   }
 
+  function showVideo() {
+    $('<div id="dialog_video" title="Practice II Instructions" style="display:none; margin:0; overflow:visible"><iframe width="560" height="315" src="https://www.youtube.com/embed/VdT6m8CkuwQ?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>').dialog({
+      width: 610,
+      height: 430,
+      modal: true,
+        draggable: false,
+      closeOnEscape: false,
+      open: function(event, ui) {
+         $(".ui-dialog-titlebar-close").hide(); 
+       },
+      buttons: {
+        'OK': function() {
+          logAction('mouseClick', 'instruction_'+currentPhaseIndex, 'done', 'null', 'null', 0, 'null');
+          $(this).dialog('destroy').remove(); 
+          //$( this ).dialog( "close" );
+          // $('<div/>').html('You need to answer 5 questions correctly to complete the activity.').dialog({
+          //   resizable: false,
+          //   height:180,
+          //   modal: true,
+          //   draggable: false,
+          //   closeOnEscape: false,
+          //   open: function(event, ui) {
+          //     $(".ui-dialog-titlebar-close").hide(); 
+          //   },
+          //   buttons: {
+          //     'OK': function() {
+          //       $(this).dialog('destroy').remove(); 
+          //     }
+          //   }
+          // });
+        }
+      },
+      close: function( event, ui ) {
+        console.log("blabla");
+        $(this).dialog('destroy').remove(); 
+      }
+    });
+  }
+
+  //showVideo();
+
   // user input could be just string and no numbers, so add this one
   function evaluate(str) {
-    if (isNaN(str)) return -1;
-    else return eval(str);
+    return eval(str.replace(/\D/g,''));
+    // if (isNaN(str)) return -1;
+    // else return eval(str);
   }
 
   function generateQnsString(qns, modalType) {
@@ -515,8 +732,9 @@
 </script>
 <script type="text/javascript" src="js/generator.js"></script>
 <script type="text/javascript" src="js/progress.js"></script>
-<script type="text/javascript" src="js/modal-drag-drop.js"></script>
+<!-- <script type="text/javascript" src="js/modal-drag-drop.js"></script> -->
 <script type="text/javascript" src="js/checklist.js"></script>
+<!-- <script type="text/javascript" src="js/jquery.youtubepopup.min.js"></script> -->
 <style>
 .list-group-item {
 border: 1px solid #ddd !important;
@@ -560,24 +778,33 @@ border: 1px solid #ddd !important;
   background-color: #f2dede !important;
 }
 </style>
-<div class="row col-sm-7">
+<!-- <div class="row col-sm-7">
   <div class="progress">
     <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
   </div>
-</div>
+</div> -->
 <div class="row">
   <div class="flow-check-list">
+    <button class="btn btn-block btn-primary btn-default" onclick="showVideo()" style="margin: auto; width: initial; margin-bottom: 15px;">Show Instruction</button>
     <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      
+      <h4>Check List</h4>
       <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
-          <li class="list-group-item" data-color="info">Read the question</li>
-          <li class="list-group-item" data-color="info">Identify the important words</li>
-          <li class="list-group-item" data-color="info">Get a plan</li>
-          <li class="list-group-item" data-color="info">Have it done</li>
-          <li class="list-group-item" data-color="info">Triple checks</li>
-        </ul>
+        <li class="list-group-item" data-color="info">Read the question</li>
+        <li class="list-group-item" data-color="info">Identify and click the important words</li>
+        <li class="list-group-item" data-color="info">Get a plan</li>
+        <li class="list-group-item" data-color="info">Have it done</li>
+        <li class="list-group-item" data-color="info">Triple checks</li>
+      </ul>
+      <h4>Progress</h4>
+      <div class="row" style="margin: 0;">
+        <div class="progress-bar" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+      </div>
+   <!--  </div>
+    <div class="well" style="background-color: rgba(245,245,245,0.7);"> -->
     </div>
   </div>
-  <div class="col-lg-12" style="display:none">
+  <!-- <div class="col-lg-12" style="display:none">
     <button type="button" class="btn btn-success" onclick="loadModalTUT()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>
@@ -586,7 +813,7 @@ border: 1px solid #ddd !important;
       <option value="_M%">Multiplication (x)</option>
       <option value="_D%">Division (/)</option>
     </select>
-  </div>
+  </div> -->
 </div>
 <!-- For Question Text and Keywords -->
 <div class="row" style="font-size: 14px;">
@@ -602,9 +829,11 @@ border: 1px solid #ddd !important;
 <div class="row" style="font-size: 14px;">
   <div class="col-sm-5" id="modal_select">
     <div class="well well-lg">
-      <a href="#" class="btn btn-block btn-primary btn-default disabled" id='button_modal_select' style="width: 100px;margin: auto;">Select Plan</a>
+      <a href="#" class="btn btn-block btn-primary btn-default" id='button_modal_select' style="width: 100px;margin: auto;">Select Plan</a>
     </div>
   </div>
+</div>
+<div class="row" style="font-size: 14px;">
   <!-- Question-->
   <div class="col-sm-5" id="modal">
   </div>
@@ -624,6 +853,18 @@ border: 1px solid #ddd !important;
 <!-- /.row -->
 <div class="row"style="font-size: 14px;">
   <div id="answer" style="margin-left: 20px;">
+    Equation : <input type="text" id="val1" class="numInput" name="val1" style="margin: 0 5px; height: 34px;">
+    <span id="operator1"></span>
+    <input type="text" id="val2" class="numInput" name="val2" style="margin: 0 5px; height: 34px;">
+    <span id="operator2" style="display:none"></span>
+    <input type="text" id="val3" class="numInput" name="val3" style="margin: 0 5px; height: 34px; display:none">
+    =&nbsp;<input type="text" id="result" class="numInput" name="result" style="margin: 0 5px; height: 34px;">
+  </div>
+  <div class="overlay" id="overlay_eq"></div>
+</div>
+<br>
+<div class="row"style="font-size: 14px;">
+  <div id="answer" style="margin-left: 20px;">
     Enter your answer : <input type="text" id="check" class="numInput" name="check" style="margin: 0 5px; height: 34px;">
     <button type='button' class='btn btn-success disabled' id='button_submit' onclick='checkanswer()'>Check Answer</button>
   </div>
@@ -633,14 +874,44 @@ border: 1px solid #ddd !important;
   <div class="row" style="font-size: 14px;padding: 15px 20px">
     <label style="">Choose Type</label>
     <div class="btn-group">
-      <button type="button" class="btn btn-default model_select_button active" id="button_addition">Addition</button>
-      <button type="button" class="btn btn-default model_select_button" id="button_subtraction">Subtraction</button>
-      <button type="button" class="btn btn-default model_select_button" id="button_multiplication">Multiplication</button>
-      <button type="button" class="btn btn-default model_select_button" id="button_division">Division</button>
+      <button type="button" class="btn btn-default model_select_button active" id="button_addition">Addition (+)</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_subtraction">Subtraction (-)</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_multiplication">Multiplication (x)</button>
+      <button type="button" class="btn btn-default model_select_button" id="button_division">Division (÷)</button>
     </div>
   </div>
-  <div class="row" id="section_addition"        style="font-size: 14px;padding: 15px 20px;"></div>
-  <div class="row" id="section_subtraction"     style="font-size: 14px;padding: 15px 20px; display:none"></div>
-  <div class="row" id="section_multiplication"  style="font-size: 14px;padding: 15px 20px; display:none"></div>
-  <div class="row" id="section_division"        style="font-size: 14px;padding: 15px 20px; display:none"></div>
+  <div class="row" id="section_addition"        style="font-size: 14px;padding: 15px 30px; width: 80%"></div>
+  <div class="row" id="section_subtraction"     style="font-size: 14px;padding: 15px 30px; width: 80%; display:none"></div>
+  <div class="row" id="section_multiplication"  style="font-size: 14px;padding: 15px 30px; width: 80%; display:none"></div>
+  <div class="row" id="section_division"        style="font-size: 14px;padding: 15px 30px; width: 80%; display:none"></div>
 </div>
+<div id="dialog_well_done" title="Well Done!" style="display:none; padding:10px">
+  <img src="images/welldone.png" style="float: left; width: 30%; margin-right: 10px;">100% completed!&nbsp;<span id="complete_correct"></span>&nbsp;You can move to the next section to try more exciting questions!
+</div>
+<!-- <script src="sliderengine/amazingslider.js"></script>
+<link rel="stylesheet" type="text/css" href="sliderengine/amazingslider-1.css">
+<script src="sliderengine/initslider-1.js"></script> -->
+<!-- Insert to your webpage where you want to display the slider -->
+<!-- <div id="amazingslider-wrapper-1" style="z-index: 1500; margin: auto; margin-top: 200px; position: absolute;top: 0; left: 0; bottom: 0; right: 0; max-width:600px;">
+    <div id="amazingslider-1" style="display:block;position:relative;margin:0 auto;">
+    <button id='sliderclose' onclick="hideSlider()"></button>
+        <ul class="amazingslider-slides" style="display:none;">
+            <li><img src="images/tut/1.png" alt="How to answer the question: 1. Read the question" /></li>
+            <li><img src="images/tut/2.png" alt="2. Identify the important words" /></li>
+            <li><img src="images/tut/3.png" alt="3. Select a plan to work on" /></li>
+            <li><img src="images/tut/4.png" alt="4a. Work on the plan" /></li>
+            <li><img src="images/tut/5.png" alt="4b. Label the known and unknown values" /></li>
+            <li><img src="images/tut/6.png" alt="5. Calculate the answer" /></li>
+        </ul>
+        <ul class="amazingslider-thumbnails" style="display:none;">
+            <li><img src="images/tut/1.png" alt="green&white" /></li>
+            <li><img src="images/tut/2.png" alt="green&white" /></li>
+            <li><img src="images/tut/3.png" alt="green&white" /></li>
+            <li><img src="images/tut/4.png" alt="green&white" /></li>
+            <li><img src="images/tut/5.png" alt="green&white" /></li>
+            <li><img src="images/tut/6.png" alt="green&white" /></li>
+        </ul>
+    <div class="amazingslider-engine"><a href="http://amazingslider.com" title="JavaScript Slider">JavaScript Slider</a></div>
+    </div>
+</div>
+<div id="amazingslider-bg" class="ui-widget-overlay ui-front"></div> -->

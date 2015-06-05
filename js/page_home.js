@@ -3,6 +3,17 @@ function loadDashboard() {
     //document.getElementById("main-content").innerHTML='<object type="text/html" data="dashboard.html" ></object>';
    $('#mn_dashboard').addClass('active');
 
+   if (overallProgress > 1 && overallProgress < phases.length) {
+      $("#btn_home_start").html("Continue Where I Left Off");
+   }
+   $("#btn_home_start").click(function(){
+      if(overallProgress < 1 || overallProgress >= phases.length) {
+        switchToPage(1);
+      } else {
+        switchToPage(overallProgress);
+      }
+   })
+
    $("#date-popover").popover({html: true, trigger: "manual"});
    $("#date-popover").hide();
    $("#date-popover").click(function (e) {
@@ -25,6 +36,7 @@ function loadDashboard() {
            {type: "block", label: "Regular event" }
        ]
    });
+
   });
 
   $body.removeClass("loading");

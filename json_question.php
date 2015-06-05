@@ -1,12 +1,13 @@
 <?php
-$type = $_GET['type'];
+$types = $_GET['type'];
+$type = explode(" ", $types);
 include('conn.php');
 
 try{
 	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qID` = 363');
 	//$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` ="MODAL_D1"');
-	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? ORDER BY RAND( ) LIMIT 5');
-	$pstmt->execute(array($type));
+	$pstmt = $dbConn->prepare('SELECT qID, qnsType, qns, ans, opt1, opt2, opt3, opt4 from `QUESTIONDB` WHERE `qnsType` like ? OR `qnsType` like ? ORDER BY RAND( ) LIMIT 10');
+	$pstmt->execute(array($type[0], $type[1]));
 	$pstmt->bindColumn(1,$id);
 	$pstmt->bindColumn(2,$qtype);
 	$pstmt->bindColumn(3,$qns);

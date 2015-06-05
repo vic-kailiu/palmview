@@ -104,6 +104,7 @@
     content += "</p>";
     textDiv.innerHTML += content;
 
+    $('#text').unbind('click');
     $('#text').on('click', '.clickable', highlight);
 
     // parsing the labels and values
@@ -171,13 +172,19 @@
         resizable: false,
         height:180,
         modal: true,
+        closeOnEscape: false,
+        open: function(event, ui) {
+           $(".ui-dialog-titlebar-close").hide(); 
+         },
         buttons: {
           "Next Question": function() {
             loadModal();
-            $( this ).dialog( "close" );
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           },
           Cancel: function() {
-            $( this ).dialog( "close" );
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           }
         }
       });
@@ -186,21 +193,28 @@
        $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
         resizable: false,
         modal: true,
+        closeOnEscape: false,
+        open: function(event, ui) {
+           $(".ui-dialog-titlebar-close").hide(); 
+         },
         buttons: {
           "Try Again": function() {
             logAction("end", 'review', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Make it easier": function() {
               if (question_difficulty > 0) question_difficulty -= 1;
               logAction("end", 'show_hint', qnss[qnssIndex].id, question_difficulty, 0, -1, 'modal_'+qnss[qnssIndex].id);
               generateQns(qnss[qnssIndex]);
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           "Next Question": function() {
               logAction("end", 'ignore_error', qnss[qnssIndex].id, 'null', 0, 0, 'null');
               loadModal();
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           }
         }
       });

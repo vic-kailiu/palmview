@@ -29,7 +29,7 @@
    <div id="sidebar"  class="nav-collapse ">
       <!-- sidebar menu start-->
       <ul class="sidebar-menu" id="nav-accordion">
-         <p class="centered"><a href="profile.php"><img src="img/friends/man.png" class="img-circle" width="60"></a></p>
+         <p class="centered"><!-- <a href="profile.php"> --><img src="img/friends/man.png" class="img-circle" width="60"><!-- </a> --></p>
          <h5 class="centered"><?php echo $_SESSION["name"] ?></h5>
       </ul>
       <!-- sidebar menu end-->
@@ -48,22 +48,22 @@ window.onbeforeunload = function (e) {
 //Loads the correct sidebar on window load,
 //collapses the sidebar on window resize.
 // Sets the min-height of #page-wrapper to window size
-$(window).bind("load resize", function() {
-  topOffset = 50;
-  width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
-  if (width < 768) {
-    $('div.nav-collapse').addClass('collapse')
-    topOffset = 100; // 2-row-menu
-  } else {
-    $('div.nav-collapse').removeClass('collapse')
-  }
-  height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
-  height = height - topOffset;
-  if (height < 1) height = 1;
-  if (height > topOffset) {
-    $("#page-wrapper").css("min-height", (height) + "px");
-  }
-});
+// $(window).bind("load resize", function() {
+//   topOffset = 50;
+//   width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
+//   if (width < 768) {
+//     $('div.nav-collapse').addClass('collapse')
+//     topOffset = 100; // 2-row-menu
+//   } else {
+//     $('div.nav-collapse').removeClass('collapse')
+//   }
+//   height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
+//   height = height - topOffset;
+//   if (height < 1) height = 1;
+//   if (height > topOffset) {
+//     $("#page-wrapper").css("min-height", (height) + "px");
+//   }
+// });
 
     var currentPhaseIndex = -1;
     var phases = null;
@@ -82,8 +82,16 @@ $(window).bind("load resize", function() {
             // walkaround for single quote parsing
             phases = JSON.parse(JSON.parse(xmlhttp.responseText))
             populateMenu();
-            currentPhaseIndex = 0;
-            loadPage(currentPhaseIndex);
+
+            var index;
+            if (sessionStorage)
+              index = eval(sessionStorage.getItem('page'));
+
+            if (pageViewed == 0 && index > 0) {
+              loadPage(index);
+            } else {
+              loadPage(0);
+            }
         }
     }
     xmlhttp.open("GET","json_phase.php",true);
@@ -104,12 +112,12 @@ $(window).bind("load resize", function() {
           default:          eleI.className = "fa fa-pencil";
         }
         
-        eleSpan = document.createElement("span");
+        //eleSpan = document.createElement("span");
         text = document.createTextNode(phases[i].title);
 
-        eleSpan.appendChild(text);
+        //eleSpan.appendChild(text);
         eleA.appendChild(eleI);
-        eleA.appendChild(eleSpan);
+        eleA.appendChild(text);
         eleA.id = "mn_" + phases[i].label;
 
         if (eleA.addEventListener) {
@@ -144,6 +152,11 @@ $(window).bind("load resize", function() {
       updateMenuProgress();
    }
 
+   function switchToPage(index) {
+      $("#mn_"+phases[currentPhaseIndex].label).removeClass("active");
+      loadPage(index);
+   }
+
    function loadPageWithLabel(label) {
       for (i = 0; i< phases.length; i++) {
         if (label == phases[i].label) {
@@ -152,8 +165,7 @@ $(window).bind("load resize", function() {
             if (currentPhaseIndex != -1) // not the first time
               logAction('end', 'null', 'null', 'null', 'null', 1, 'phase_'+currentPhaseIndex);
 
-            currentPhaseIndex = i;
-            loadPage(currentPhaseIndex);
+            loadPage(i);
 
           }
           return;
@@ -162,18 +174,29 @@ $(window).bind("load resize", function() {
       loadPage(-1);
    }
 
+   var pageViewed = 0;
+
    function loadPage(index) {
+      if (currentPhaseIndex == index)
+        return;
+
+      currentPhaseIndex = index;
+
+      pageViewed++;
+
+      sessionStorage && sessionStorage.setItem("page", currentPhaseIndex);
+
       if (!$body.hasClass("loading")) $body.addClass("loading");
 
-      if (index >= phases.length || index < 0) currentPhaseIndex = index = 0;
+      if (currentPhaseIndex >= phases.length || currentPhaseIndex < 0) currentPhaseIndex = 0;
 
       // removeMainContent();
 
-      switch (phases[index].contentType) {
+      switch (phases[currentPhaseIndex].contentType) {
         case "PAGE":      loadDashboard();  break;
         case "VIDEO":     loadVideo();      break;
         case "PRACTICE":  loadPractice();   break;
-        case "QUIZ":      loadQuizPage();       break; 
+        case "QUIZ":      loadQuizPage();   break; 
         default:          loadDashboard();
       }
 
@@ -271,7 +294,7 @@ $(window).bind("load resize", function() {
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.onreadystatechange=function(){
       if (xmlhttp.readyState==4 && xmlhttp.status==200){
-        var overallProgress = parseInt(xmlhttp.responseText);
+        overallProgress = parseInt(xmlhttp.responseText);
 
         var menu = document.getElementById('nav-accordion');
         for (var i = overallProgress + 3; i < menu.children.length; i++) {
@@ -286,8 +309,9 @@ $(window).bind("load resize", function() {
     if (overallProgress >= progress) return;
     overallProgress = progress;
 
-    document.getElementById('nav-accordion')
-      .children[overallProgress+2].children[0].classList.remove('disableMenuClick');
+    var ele = document.getElementById('nav-accordion').children[overallProgress+2];
+    if (ele)
+      ele.children[0].classList.remove('disableMenuClick');
 
     logProgress(overallProgress);
   }

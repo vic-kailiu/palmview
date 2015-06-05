@@ -1,21 +1,30 @@
 <script type="text/javascript">
   var qnss = null;
-  var _selectType = null;
+  var _selectType = "MODAL_% MODAL_%";
+  var _number = 5;
   var qnssIndex = 1000;
 
   var progress_inited = false;
 
-  function loadModalMCQ() {
-    if (!progress_inited) {
-      initProgress(5);
-      progress_inited = true;
+  function loadModalMCQ(types, number) {
+    if (number !=null && number > 0) {
+      _number = number;
     }
+
+    if (!progress_inited) {
+      initProgress(_number);
+      progress_inited = true;
+      correct = 0;
+    }
+
     initCheckList();
     // increaseProgress();
 
-    var selectType = document.getElementById('selectType').value;
+    if (types != null && types != '') {
+      _selectType = types;
+    }
 
-    if (qnss == null || _selectType != selectType) {
+    if (qnss == null) { // || _selectType != selectType) {
         if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp = new XMLHttpRequest();
@@ -32,7 +41,7 @@
                 $body.removeClass("loading");
             }
         }
-        xmlhttp.open("GET", "json_question.php?type=MODAL" + selectType, true);
+        xmlhttp.open("GET", "json_question.php?type=" + _selectType, true);
         xmlhttp.send();
     } else {
         qnssIndex += 1;
@@ -44,7 +53,9 @@
         }
     }
 
-    _selectType = selectType;
+    ans = false;
+
+    //_selectType = selectType;
   }
 
   function generateModalMCQ(qns) {
@@ -84,6 +95,7 @@
     content += "</p>";
     textDiv.innerHTML += content;
 
+    $("#text").unbind('click');
     $('#text').on('click', '.clickable', function() {
       highlight(this); 
     } );
@@ -101,7 +113,7 @@
         valueJSONArr.push( parsePara(valueStringArr[0]) );
         valueJSONArr.push( parsePara(valueStringArr[1]) );
 
-        content += '<ol style="padding: 0;"><input type="radio" name="q'+ qns.id +'" onclick="checkMCQ(event)" value="'+optionModal[0]+'"style="float: left;">';
+        content += '<ol style="padding: 0 10px 0 0;"><input type="radio" name="q'+ qns.id +'" onclick="checkMCQ(event)" value="'+optionModal[0]+'"style="float: left; font-size: 40px; margin: auto 5px;">';
         content += '<div style="float: left;width: 90%;">';
         content += populateModal(optionModal[1], labelArr, valueJSONArr, false, 0);
         content += '</div></ol>';
@@ -118,26 +130,153 @@
     logAction('mouseClick', 'mcq_select', qnss[qnssIndex].id, 'null', ~~ans, 0, 'null');
   }
 
+  function showVideo() {
+    $( '<div id="dialog_video" title="Practice I Instructions" style="display:none; margin:0; overflow:visible"><iframe id="player_mcq" width="560" height="315" src="https://www.youtube.com/embed/lvWSbnKOENc?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>' ).dialog({
+      width: 610,
+      height: 430,
+      modal: true,
+        draggable: false,
+      closeOnEscape: false,
+      open: function(event, ui) {
+         $(".ui-dialog-titlebar-close").hide(); 
+       },
+      buttons: {
+        'OK': function() {
+          logAction('mouseClick', 'instruction_'+currentPhaseIndex, 'done', 'null', 'null', 0, 'null');
+          $(this).dialog('destroy').remove(); 
+          //$( this ).dialog( "close" );
+          // $('<div/>').html('You need to answer 5 questions correctly to complete the activity.').dialog({
+          //   resizable: false,
+          //   height:180,
+          //   modal: true,
+          //   draggable: false,
+          //   closeOnEscape: false,
+          //   open: function(event, ui) {
+          //     $(".ui-dialog-titlebar-close").hide(); 
+          //   },
+          //   buttons: {
+          //     'OK': function() {
+          //       $(this).dialog('destroy').remove(); 
+          //     }
+          //   }
+          // });
+        }
+      },
+      close: function( event, ui ) {
+        console.log("blabla");
+        $(this).dialog('destroy').remove(); 
+      }
+    });
+
+    // return;
+
+    // // 2. This code loads the IFrame Player API code asynchronously.
+    // var tag = document.createElement('script');
+
+    // tag.src = "https://www.youtube.com/iframe_api";
+    // var firstScriptTag = document.getElementsByTagName('script')[0];
+    // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // // 3. This function creates an <iframe> (and YouTube player)
+    // //    after the API code downloads.
+    // var player;
+    // function onYouTubeIframeAPIReady() {
+    //   player = new YT.Player('player_mcq', {
+    //     events: {
+    //       'onStateChange': onPlayerStateChange
+    //     }
+    //   });
+    // }
+
+    // function onPlayerStateChange(event) {
+    //   var videoID = event.target.getVideoData().video_id;
+    //   switch(event.data) {
+    //     case YT.PlayerState.PLAYING:
+    //         logAction('mouseClick', 'video_start', videoID, event.target.getCurrentTime(),'null', -1, videoID);
+    //         console.log("blablablabla");
+    //         break;
+    //     case YT.PlayerState.PAUSED:
+    //       logAction('mouseClick', 'video_pause', videoID, event.target.getCurrentTime(), 'null', -1, videoID);
+    //       break;
+    //     case YT.PlayerState.ENDED:
+    //       logAction('mouseClick', 'video_end', videoID, 'null', 'null', 1, videoID);
+    //       break;
+    //     case YT.PlayerState.BUFFERING:
+    //       logAction('mouseClick', 'video_buffering', videoID, event.target.getCurrentTime(), 'null', -1, videoID);
+    //       break;
+    //     case YT.PlayerState.CUED:
+    //       logAction('mouseClick', 'video_', videoID, event.target.getCurrentTime(), 'null', -1, videoID);
+    //       break;
+    //   }
+    // }
+
+  }
+
+  showVideo();
+
+  function complete_activity() {
+    updateOverallProgress(currentPhaseIndex+1);
+
+    $("#complete_correct").html('Your score is '+ Math.round(correct/_number*100) + "%.");
+    dialog = $( "#dialog_well_done" ).dialog({
+      width: 400,
+      height: 220,
+      modal: true,
+      draggable: false,
+      closeOnEscape: false,
+      open: function(event, ui) {
+       $(".ui-dialog-titlebar-close").hide(); 
+      },
+      buttons: {
+        'Next activity': function() {
+          logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'next activity', 'null', 'null', 0, 'null');
+          
+          switchToPage(currentPhaseIndex+1);
+          $( this ).dialog( "close" );
+        },
+        'Practice more': function() {
+          logAction('mouseClick', 'select_well-done_'+currentPhaseIndex, 'practice more', 'null', 'null', 0, 'null');
+          progress_inited = false;
+          sessionStorage && sessionStorage.setItem('progress', 0);
+          loadModalMCQ();
+
+          $( this ).dialog( "close" );
+        },
+        'Close': function() {
+          logAction('mouseClick', 'select_modal_cancel', qnss[qnssIndex].id, 'null', 'null', 0, 'null');
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  }
+
+  var correct = 0;
+
   function checkanswer() {
     if ( ans ) {
       logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, 1, 'modal_'+qnss[qnssIndex].id);
-      $('<div/>').html('CORRECT ANSWER! Want to practice more? ').dialog({
+      increaseProgress();
+      correct ++;
+      if (qnssIndex == _number-1){
+        //if (checkCompletion()) {
+        complete_activity();
+        return;
+      }
+
+      $('<div/>').html('CORRECT ANSWER! Want to ... ').dialog({
         resizable: false,
         height:180,
         modal: true,
+        draggable: false,
         buttons: {
           "Next Question": function() {
-            increaseProgress();
-
-            if (checkCompletion()) {
-              updateOverallProgress(4);
-            }
-
             loadModalMCQ();
-            $( this ).dialog( "close" );
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           },
-          Cancel: function() {
-            $( this ).dialog( "close" );
+          'Close': function() {
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           }
         }
       });
@@ -146,10 +285,16 @@
        $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
         resizable: false,
         modal: true,
+        draggable: false,
+        closeOnEscape: false,
+        open: function(event, ui) {
+         $(".ui-dialog-titlebar-close").hide(); 
+        },
         buttons: {
           "Try Again": function() {
             logAction("end", 'review', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
-              $( this ).dialog( "close" );
+              $(this).dialog('destroy').remove(); 
+              //$( this ).dialog( "close" );
           },
           // "Make it easier": function() {
           //     if (question_difficulty > 0) question_difficulty -= 1;
@@ -158,8 +303,15 @@
           // },
           "Next Question": function() {
             logAction("end", 'ignore_error', qnss[qnssIndex].id, 'null', 0, 0, 'null');
+            increaseProgress();
+            if (checkCompletion()){//qnssIndex == _number-1){
+              //if (checkCompletion()) {
+              complete_activity();
+            } else {
               loadModalMCQ();
-              $( this ).dialog( "close" );
+            }
+            $(this).dialog('destroy').remove(); 
+            //$( this ).dialog( "close" );
           }
         }
       });
@@ -186,9 +338,12 @@
     return array;
   }
 
-  function fireBack(index, checked) {}
+  function fireBack(index, checked) {
+    logAction('mouseClick', 'progress_modal_mcq'+'index'+'_checked', qnss[qnssIndex].id, 'null', 'null', 0, 'null');
+  }
 </script>
 <script type="text/javascript" src="js/checklist.js"></script>
+<script type="text/javascript" src="js/progress.js"></script>
 <style>
 ol {
   display: inline-flex;
@@ -225,24 +380,29 @@ border: 1px solid #ddd !important;
   background-color: #f2dede !important;
 }
 </style>
-<div class="row col-sm-7">
+<!-- <div class="row col-sm-7">
   <div class="progress">
     <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
   </div>
-</div>
+</div> -->
 <div class="row">
   <div class="flow-check-list">
     <div class="well" style="background-color: rgba(245,245,245,0.7);">
+      <h4>Check List</h4>
       <ul id="check-list-box" class="list-group checked-list-box" style="margin: 0;">
-          <li class="list-group-item" data-color="info">Read the question</li>
-          <li class="list-group-item" data-color="info">Identify the important words</li>
-          <li class="list-group-item" data-color="info">Get a plan</li>
-          <li class="list-group-item" data-color="info">Have it done</li>
-          <li class="list-group-item" data-color="info">Triple checks</li>
-        </ul>
+        <li class="list-group-item" data-color="info">Read the question</li>
+        <li class="list-group-item" data-color="info">Identify and click the important words</li>
+        <li class="list-group-item" data-color="info">Get a plan</li>
+<!--           <li class="list-group-item" data-color="info">Have it done</li>
+        <li class="list-group-item" data-color="info">Triple checks</li> -->
+      </ul>
+      <h4>Progress</h4>
+      <div class="row" style="margin: 0;">
+        <div class="progress-bar" role="progressbar" id='progress-bar' aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+      </div>
     </div>
   </div>
-  <div class="col-lg-12" style="display:none">
+  <!-- <div class="col-lg-12" style="display:none">
     <button type="button" class="btn btn-success" onclick="loadModalMCQ()">Generate Question</button>
     <select id="selectType" class="btn btn-theme dropdown-toggle">
       <option value="%">Random (+,-,x,/)</option>
@@ -251,13 +411,14 @@ border: 1px solid #ddd !important;
       <option value="_M%">Multiplication (x)</option>
       <option value="_D%">Division (/)</option>
     </select>
-  </div>
+  </div> -->
 </div>
 <!-- For Question Text and Keywords -->
 <div class="row" style="font-size: 14px;">
   <!-- Question Text-->
   <div class="col-sm-7">
     <h4 id="questionId">Question:</h4>
+    <h4>&emsp;Choose the most suitable plan for the question</h4><br>
     <div id="text"></div>
   </div>
 </div>
@@ -269,3 +430,6 @@ border: 1px solid #ddd !important;
 </div>
 <!-- /.row -->
 <div id="answer" style="font-size: 14px;"><button type="button" class="btn btn-success" onclick="checkanswer()">Check Answer</button></div>
+<div id="dialog_well_done" title="Well Done!" style="display:none; padding:10px">
+  <img src="images/welldone.png" style="float: left; width: 30%; margin-right: 10px;">100% completed!&nbsp;<span id="complete_correct"></span>&nbsp;You can move to the next section to try more exciting questions!
+</div>

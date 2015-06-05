@@ -19,12 +19,14 @@ function initCheckList() {
         $widget.append($checkbox);
 
         // Event Handlers
+        $widget.unbind('click');
         $widget.on('click', function () {
             if ($checkbox.is(':checked')) return; // disable the uncheck function for user
             $checkbox.prop('checked', !$checkbox.is(':checked'));
             $checkbox.triggerHandler('change');
             updateDisplay();
         });
+        $checkbox.unbind('change');
         $checkbox.on('change', function (event) {
             var child = event.target.parentNode;
             var parent = child.parentNode;

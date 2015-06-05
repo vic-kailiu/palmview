@@ -25,9 +25,19 @@
 <script src="js/jquery.nicescroll.js" type="text/javascript"></script>
 <script src="js/jquery.sparkline.js"></script>
 <!--common script for all pages-->
+<script type="text/javascript" src="js/modal-drag-drop.js"></script>
 <script type="text/javascript" src="js/gritter/js/jquery.gritter.js"></script>
 <script type="text/javascript" src="js/gritter-conf.js"></script> 
 <script src="js/log.js"></script>
+<!--Start of Zopim Live Chat Script-->
+<script type="text/javascript">
+window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+_.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
+$.src="//v2.zopim.com/?33FXi5lhMrCnJQsuyteubUWrInOP7nra";z.t=+new Date;$.
+type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
+</script>
+<!--End of Zopim Live Chat Script-->
 <script>
 // var currentPhaseIndex = -1;
 // var phases = null;
@@ -95,7 +105,7 @@ function logAction(actType, act, tar1, tar2, correct, durationCode, durationKey)
   } else if (durationCode == 1){  // pop key
     var i = 0;
     while ( i<durationDictionary.length && durationDictionary[i].key != durationKey) i++;
-    if (durationDictionary[i].key == durationKey) {
+    if (durationDictionary[i] && durationDictionary[i].key == durationKey) {
       var item = durationDictionary.pop(durationDictionary[i]);
       var startTime = item.timestamp;
       duration = 60*60*1000*(cur.getHours()-startTime.getHours())+60*1000*(cur.getMinutes()-startTime.getMinutes())+1000*(cur.getSeconds()-startTime.getSeconds())+(cur.getMilliseconds()-startTime.getMilliseconds());
@@ -114,7 +124,7 @@ function logAction(actType, act, tar1, tar2, correct, durationCode, durationKey)
                     tar2,
                     '<?php echo $sessionID;?>']);
 
-  if (log.length > 20) {
+  if (log.length > 20 || actType == 'end' || actType == 'stop') {
     logIntoServer(log);
     log = [];
   }
@@ -135,6 +145,30 @@ function logProgress(progress){
   xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xmlhttp.send();
 }
+
+// dialog box fixed position
+// $(document).ready(function() {
+//     $(document).scroll(function(e){
+
+//         if ($(".ui-widget-overlay")) //the dialog has popped up in modal view
+//         {
+//             //fix the overlay so it scrolls down with the page
+//             $(".ui-widget-overlay").css({
+//                 position: 'fixed',
+//                 top: '0'
+//             });
+
+//             //get the current popup position of the dialog box
+//             pos = $(".ui-dialog").position();
+
+//             //adjust the dialog box so that it scrolls as you scroll the page
+//             $(".ui-dialog").css({
+//                 position: 'fixed',
+//                 top: pos.y
+//             });
+//         }
+//     });
+// });
 
 </script>
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->

@@ -11,11 +11,17 @@ function loadPractice() {
         eleDes.insertBefore(des, eleDes.childNodes[0]);
 
         switch (phases[currentPhaseIndex].para1) {
-            case 'MODAL_TUT':   $("#main_content").load("template_modal_tut.html",  function() {  loadModalTUT(); });   break;
-            case 'MODAL_MCQ':   $("#main_content").load("template_modal_mcq.html",  function() {  loadModalMCQ(); });   break;
-            case 'MODAL':       $("#main_content").load("template_modal.html",      function() {  loadModal(); });      break;
-            case 'MCQ':         $("#main_content").load("template_mcq.html",        function() {  loadMCQ(); });        break;
-            case 'QUIZ':        $("#main_content").load("template_quiz.html",       function() {  loadQuiz(); });       break;
+            case 'MODAL_TUT':   $("#main_content").load("template_modal_tut.html",  function() {  
+                loadModalTUT(phases[currentPhaseIndex].para2, phases[currentPhaseIndex].para3); 
+            });   break;
+            case 'MODAL_MCQ':   $("#main_content").load("template_modal_mcq.html",  function() {  
+                loadModalMCQ(phases[currentPhaseIndex].para2, phases[currentPhaseIndex].para3); });   break;
+            case 'MODAL':       $("#main_content").load("template_modal.html",      function() {  
+                loadModal(); });      break;
+            case 'MCQ':         $("#main_content").load("template_mcq.html",        function() {  
+                loadMCQ(phases[currentPhaseIndex].para2, phases[currentPhaseIndex].para3); });        break;
+            case 'QUIZ':        $("#main_content").load("template_quiz.html",       function() {  
+                loadQuiz(); });       break;
         }
     });
     //$body.removeClass("loading");

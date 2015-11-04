@@ -232,11 +232,16 @@ function onSelectVideo(e) {
 function changeVideo(index) {
   eleSelect = document.getElementById("selectVideo");
     eleSelect.childNodes[_current_video_index].className = "";
+
+    var previousVideo;
+    if (videos && videos[_current_video_index])
+      previousVideo = videos[_current_video_index].videoID;
+
     _current_video_index = index;
     eleSelect.childNodes[_current_video_index].className = "active";
     videos && videos[_current_video_index] 
     && logAction('mouseClick', 'video_select', 
-                  videos[_current_video_index].videoID, 'null', 'null', 0, 'null');
+                  videos[_current_video_index].videoID, previousVideo, 'null', 0, 'null');
     fireVideoSelectChange();
 }
 

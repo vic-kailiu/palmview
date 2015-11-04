@@ -26,7 +26,7 @@ var dragTarEl_ = null;
 
 function handleDragStart(e) {
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', e.target.id);
+    e.dataTransfer.setData('text', e.target.id);
 
     dragSrcEl_ = e.target;
 
@@ -57,15 +57,21 @@ function handleDragLeave(e) {
 };
 
 function handleDrop(e) {
+    if(e.preventDefault) { e.preventDefault(); }
+    
     // this/e.target is current target element.
     if (e.stopPropagation) {
         e.stopPropagation(); // stops the browser from redirecting.
     }
 
+    if (e.stopImmediatePropagation) {
+        e.stopImmediatePropagation(); // stops the browser from redirecting.
+    }
+
     // Don't do anything if we're dropping on the same column we're dragging.
     if (dragSrcEl_ != e.target) {
         //dragSrcEl_.innerHTML = this.innerHTML;
-        var data = e.dataTransfer.getData("text/plain");
+        var data = e.dataTransfer.getData("text");
         target = e.target;
         while (!target.classList.contains("box")) {
             target = target.parentNode;

@@ -264,7 +264,7 @@
         }
       });
 
-      if (question_difficulty && question_difficulty == 0)
+      if (question_difficulty < 1)
         $(".ui-dialog-buttonpane button:contains('Make it easier')").button("disable");
     }
   }

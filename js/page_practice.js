@@ -206,8 +206,8 @@ function parsePara(str) {
     var JSONArr = [];
     var Arr = str.split('&');
     for (i = 0; i < Arr.length; i++) {
-        node = {};
-        item = Arr[i].split("%");
+        var node = {};
+        var item = Arr[i].split("%");
         node['text'] = item[0];
         node['scala'] = item[1];
 

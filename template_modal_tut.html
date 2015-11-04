@@ -418,6 +418,8 @@
     document.getElementById('modal_hint_well').style.display = '';
 
     hintDiv.innerHTML = populateModal(qns.type, labelArr, valueJSONArr, false, question_difficulty);
+
+    $("#overlay_eq").show();
   }
 
   function complete_activity() {
@@ -472,7 +474,7 @@
 
     
     if (evaluate(ck) == eval(qnss[qnssIndex].ans)) {
-      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, -1, 'modal_'+qnss[qnssIndex].id);
+      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 1, 1, 'modal_'+qnss[qnssIndex].id);
       correct++;
       increaseProgress();
 
@@ -500,7 +502,7 @@
         }
       });
     } else {
-      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 0, -1, 'modal_'+qnss[qnssIndex].id);
+      logAction("submission", 'null', qnss[qnssIndex].id, 'null', 0, 1, 'modal_'+qnss[qnssIndex].id);
        $('<div/>').html('WRONG ANSWER! Want to ... ').dialog({
         resizable: false,
         modal: true,
